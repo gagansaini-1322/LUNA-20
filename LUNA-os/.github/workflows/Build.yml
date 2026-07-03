@@ -31,6 +31,12 @@ jobs:
           SCRIPT=$(dpkg -L live-build | grep "lb_chroot_linux-image$")
           sudo sed -i '/dists.*Contents/{ s/.*/true/; }' "$SCRIPT"
 
+      - name: Patch lb_chroot_hacks
+        run: |
+          # Fix dangling symlink chmod failure that exits the build before binary phase
+          sudo sed -i 's@find chroot/boot -name .initrd.. -print0 | xargs -r -0 chmod go+r@find chroot/boot -name "initrd*" -print0 | xargs -r -0 chmod go+r 2>/dev/null || true@' /usr/lib/live/build/lb_chroot_hacks
+          grep -n "initrd.*chmod\|chmod.*initrd" /usr/lib/live/build/lb_chroot_hacks
+
       - name: Build Luna OS ISO
         working-directory: LUNA-os
         run: |
