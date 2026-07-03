@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Luna Top Bar
+Exec=python3 /opt/luna-topbar/topbar.py
+NoDisplay=true
+X-GNOME-Autostart-enabled=true

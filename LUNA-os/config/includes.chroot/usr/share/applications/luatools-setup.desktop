@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=LuaTools Setup
+Comment=Set up Steam Lua tools integration
+Exec=lxterminal -e luatools-setup
+Icon=steam
+Categories=Game;

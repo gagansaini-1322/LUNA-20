@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luna Hub</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+@font-face {
+    font-family: 'Inter';
+    src: local('Inter');
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #10131a;
+    color: #E8EAF0;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #a855f7;
+    letter-spacing: 2px;
+}
+
+.header p {
+    font-size: 12px;
+    color: #8b93a7;
+    margin-top: 4px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.card {
+    background: #1b1f2a;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #1e2030;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8ba3b2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.card-icon {
+    font-size: 18px;
+}
+
+.card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #E8EAF0;
+    margin-bottom: 4px;
+}
+
+.card-sub {
+    font-size: 12px;
+    color: #4a4d60;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #1e2030;
+    border-radius: 4px;
+    margin-top: 12px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.8s ease, background-color 0.8s ease;
+}
+
+.temp { background: linear-gradient(90deg, #6366F1, #A78BFA); }
+
+.perf-modes {
+    display: flex;
+    gap: 8px;
+}
+
+.perf-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: 1px solid #1e2030;
+    border-radius: 10px;
+    background: #1b1f2a;
+    color: #8ba3b2;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.perf-btn:hover {
+    background: #252840;
+    color: #E8EAF0;
+}
+
+.perf-btn.active {
+    background: #6366F1;
+    color: #ffffff;
+    border-color: #6366F1;
+}
+
+.section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #8ba3b2;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+.full-card {
+    background: #1b1f2a;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #1e2030;
+}
+
+.battery-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.battery-icon {
+    font-size: 24px;
+}
+
+.battery-pct {
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.battery-status {
+    font-size: 12px;
+    color: #8ba3b2;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>LUNA HUB</h1>
+    <p>System Monitor</p>
+</div>
+
+<div class="grid">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">CPU</span>
+            <span class="card-icon">⚡</span>
+        </div>
+        <div class="card-value" id="cpu-val">0%</div>
+        <div class="card-sub" id="cpu-temp">0°C</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="cpu-bar" style="width:0%; background:#6366F1;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">RAM</span>
+            <span class="card-icon">📊</span>
+        </div>
+        <div class="card-value" id="ram-val">0%</div>
+        <div class="card-sub" id="ram-detail">0 / 0 GB</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="ram-bar" style="width:0%; background:#6366F1;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">GPU</span>
+            <span class="card-icon">🎮</span>
+        </div>
+        <div class="card-value" id="gpu-val">0%</div>
+        <div class="card-sub" id="gpu-name">No GPU detected</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="gpu-bar" style="width:0%; background:#6366F1;"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Temp</span>
+            <span class="card-icon">🌡️</span>
+        </div>
+        <div class="card-value" id="temp-val">0°C</div>
+        <div class="card-sub" id="fan-val">Fan: 0 RPM</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="temp-bar" style="width:0%; background:#6366F1;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="full-card" style="margin-bottom: 20px;">
+    <div class="card-header">
+        <span class="card-title">Battery</span>
+        <span class="card-icon">🔋</span>
+    </div>
+    <div class="battery-bar">
+        <span class="battery-pct" id="bat-pct">N/A</span>
+        <div style="flex:1">
+            <div class="progress-bar">
+                <div class="progress-fill" id="bat-bar" style="width:0%; background:#6366F1;"></div>
+            </div>
+        </div>
+    </div>
+    <div class="card-sub" id="bat-status" style="margin-top:8px;"></div>
+</div>
+
+<div class="section-title">Performance Mode</div>
+<div class="perf-modes">
+    <button class="perf-btn" data-mode="power-saver" onclick="setMode('power-saver')">Power Saver</button>
+    <button class="perf-btn active" data-mode="balanced" onclick="setMode('balanced')">Balanced</button>
+    <button class="perf-btn" data-mode="performance" onclick="setMode('performance')">Performance</button>
+</div>
+
+<script>
+function getColor(pct) {
+    if (pct < 50) return '#6366F1';
+    if (pct < 80) return '#F59E0B';
+    return '#EF4444';
+}
+
+function setMode(mode) {
+    fetch('/api/perf-mode/' + mode, { method: 'POST' })
+        .then(() => {
+            document.querySelectorAll('.perf-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.mode === mode);
+            });
+        });
+}
+
+function update() {
+    fetch('/api/stats')
+        .then(r => r.json())
+        .then(d => {
+            document.getElementById('cpu-val').textContent = d.cpu_percent.toFixed(1) + '%';
+            document.getElementById('cpu-temp').textContent = d.cpu_temp + '°C';
+            document.getElementById('cpu-bar').style.width = d.cpu_percent + '%';
+            document.getElementById('cpu-bar').style.background = getColor(d.cpu_percent);
+
+            document.getElementById('ram-val').textContent = d.ram_percent + '%';
+            document.getElementById('ram-detail').textContent = d.ram_used + ' / ' + d.ram_total + ' GB';
+            document.getElementById('ram-bar').style.width = d.ram_percent + '%';
+            document.getElementById('ram-bar').style.background = getColor(d.ram_percent);
+
+            document.getElementById('gpu-val').textContent = d.gpu.load + '%';
+            document.getElementById('gpu-name').textContent = d.gpu.name;
+            document.getElementById('gpu-bar').style.width = d.gpu.load + '%';
+            document.getElementById('gpu-bar').style.background = getColor(d.gpu.load);
+
+            document.getElementById('temp-val').textContent = d.cpu_temp + '°C';
+            document.getElementById('fan-val').textContent = 'Fan: ' + d.fan_rpm + ' RPM';
+            let tempPct = Math.min(d.cpu_temp, 100);
+            document.getElementById('temp-bar').style.width = tempPct + '%';
+            document.getElementById('temp-bar').style.background = getColor(tempPct);
+
+            if (d.battery.level >= 0) {
+                document.getElementById('bat-pct').textContent = d.battery.level + '%';
+                document.getElementById('bat-bar').style.width = d.battery.level + '%';
+                document.getElementById('bat-bar').style.background = getColor(100 - d.battery.level);
+                document.getElementById('bat-status').textContent = d.battery.plugged ? 'Charging' : 'On Battery';
+            } else {
+                document.getElementById('bat-pct').textContent = 'AC Power';
+                document.getElementById('bat-bar').style.width = '100%';
+                document.getElementById('bat-bar').style.background = '#6366F1';
+                document.getElementById('bat-status').textContent = 'Desktop (no battery)';
+            }
+        })
+        .catch(() => {});
+}
+
+fetch('/api/perf-mode')
+    .then(r => r.json())
+    .then(d => {
+        document.querySelectorAll('.perf-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.mode === d.mode);
+        });
+    });
+
+update();
+setInterval(update, 3000);
+</script>
+</body>
+</html>

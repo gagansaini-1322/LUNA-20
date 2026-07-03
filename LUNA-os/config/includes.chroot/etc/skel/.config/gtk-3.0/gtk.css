@@ -1,0 +1,157 @@
+/* Luna OS GTK3 Theme Overrides */
+
+/* ===== Context Menu Styling ===== */
+menu,
+.context-menu,
+ GtkMenu {
+    background-color: #1a1d2e;
+    border-radius: 14px;
+    border: 1px solid #2a2d3f;
+    padding: 6px 0;
+}
+
+menu item,
+context-menu menuitem {
+    padding: 8px 24px 8px 16px;
+    border-radius: 8px;
+    margin: 2px 6px;
+    color: #E8EAF0;
+    font-family: "Inter", sans-serif;
+    font-size: 14px;
+}
+
+menu item:hover,
+context-menu menuitem:hover,
+menu item:selected,
+context-menu menuitem:selected {
+    background-color: #252840;
+    color: #E8EAF0;
+}
+
+menu item:disabled,
+context-menu menuitem:disabled {
+    color: #4a4d60;
+}
+
+menu separator,
+context-menu separator {
+    background-color: #2a2d3f;
+    margin: 4px 12px;
+    min-height: 1px;
+}
+
+/* ===== Thunar File Manager ===== */
+.thunar .sidebar,
+.thunar .sidebar .view {
+    background-color: #0f1117;
+    color: #E8EAF0;
+}
+
+.thunar .sidebar row:selected,
+.thunar .sidebar .view:selected {
+    background-color: #5B5BD6;
+    color: #ffffff;
+}
+
+.thunar .toolbar,
+.thunar .header-bar {
+    background-color: #12141c;
+    border-bottom: 1px solid #1e2030;
+    color: #E8EAF0;
+}
+
+.thunar .view {
+    background-color: #12141c;
+    color: #E8EAF0;
+}
+
+.thunar .view:selected,
+.thunar .icon-view:selected {
+    background-color: #6366F1;
+    border-radius: 8px;
+}
+
+.thunar .view:hover,
+.thunar .icon-view:hover {
+    background-color: #1a1d2e;
+}
+
+.thunar scrollbar {
+    background-color: #12141c;
+}
+
+.thunar scrollbar slider {
+    background-color: #3a3d50;
+    border-radius: 12px;
+    min-width: 8px;
+}
+
+/* ===== General Widget Overrides ===== */
+GtkTreeView,
+GtkIconView,
+GtkTextView {
+    background-color: #12141c;
+    color: #E8EAF0;
+}
+
+GtkTreeView:selected,
+GtkIconView:selected,
+GtkTextView:selected {
+    background-color: #6366F1;
+    color: #ffffff;
+}
+
+ GtkEntry {
+    background-color: #1a1d2e;
+    color: #E8EAF0;
+    border: 1px solid #2a2d3f;
+    border-radius: 8px;
+    padding: 6px 10px;
+}
+
+ GtkEntry:focus {
+    border-color: #6366F1;
+}
+
+ GtkButton {
+    background-color: #1a1d2e;
+    color: #E8EAF0;
+    border: 1px solid #2a2d3f;
+    border-radius: 8px;
+    padding: 6px 16px;
+}
+
+ GtkButton:hover {
+    background-color: #252840;
+}
+
+ GtkButton:active {
+    background-color: #6366F1;
+}
+
+ GtkLabel {
+    color: #E8EAF0;
+    font-family: "Inter", sans-serif;
+}
+
+ GtkHeaderBar {
+    background-color: #0F0F14;
+    color: #E8EAF0;
+    border-bottom: 1px solid #1e2030;
+}
+
+ GtkScrolledWindow {
+    background-color: #12141c;
+}
+
+ GtkWindow,
+ dialog {
+    background-color: #0F0F14;
+    color: #E8EAF0;
+}
+
+ GtkFrame,
+ .frame {
+    border: 1px solid #1e2030;
+    border-radius: 8px;
+}

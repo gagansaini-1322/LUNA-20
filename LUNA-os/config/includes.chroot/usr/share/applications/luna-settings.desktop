@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Settings
+Exec=python3 /opt/luna-settings/settings.py
+Icon=preferences-system
+Categories=System;Settings;

@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+echo "[luna-hook] Disabling non-essential services..."
+for svc in cups cups-browsed avahi-daemon ModemManager \
+           whoopsie apport saned colord; do
+    systemctl disable "$svc" 2>/dev/null || true
+    systemctl mask "$svc" 2>/dev/null || true
+done
+
+echo "[luna-hook] Blacklisting unused modules..."
+cat > /etc/modprobe.d/luna-blacklist.conf << 'EOF'
+blacklist usblp
+blacklist uvcvideo
+blacklist lirc_dev
+EOF
+echo "[luna-hook] Services trimmed."

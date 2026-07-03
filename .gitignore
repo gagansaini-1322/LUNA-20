@@ -1,0 +1,25 @@
+# Build artifacts
+*.iso
+build.log
+.cache/
+.chroot/
+.packages*
+.iso.hybrid
+.binary/
+chroot/
+config/cache/
+
+# Live-build working directories
+config/includes.chroot/
+!config/includes.chroot/
+
+# Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

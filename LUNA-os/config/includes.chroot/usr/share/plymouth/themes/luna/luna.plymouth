@@ -1,0 +1,30 @@
+[Plymouth Theme]
+Name=luna
+Description=Luna OS boot animation
+ModuleName=two-step
+
+[two-step]
+ImageDir=/usr/share/plymouth/themes/luna
+HorizontalAlignment=.5
+VerticalAlignment=.5
+Transition=none
+TransitionDuration=0.0
+BackgroundStartColor=0x0a0b10
+BackgroundEndColor=0x0a0b10
+ProgressBarHorizontalAlignment=.5
+ProgressBarVerticalAlignment=.78
+ProgressBarWidth=250
+ProgressBarHeight=10
+ProgressBarBackgroundColor=0x1f2230
+ProgressBarForegroundColor=0x6366f1
+DialogClearsFirmwareBackground=true
+MessageBelowAnimation=true
+
+[boot-up]
+UseEndAnimation=false
+
+[shutdown]
+UseEndAnimation=false
+
+[reboot]
+UseEndAnimation=false

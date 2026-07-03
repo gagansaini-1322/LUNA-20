@@ -1,0 +1,132 @@
+# Base live system
+live-boot
+live-config
+live-config-systemd
+user-setup
+
+# Desktop environment
+xfce4
+xfce4-terminal
+xfce4-settings
+xfce4-power-manager
+xfwm4
+xfdesktop4
+thunar
+thunar-archive-plugin
+thunar-volman
+
+# Display manager
+lightdm
+lightdm-gtk-greeter
+
+# Audio
+pulseaudio
+pavucontrol
+pulseaudio-module-bluetooth
+
+# Network
+network-manager
+network-manager-gnome
+wireless-tools
+
+# Bluetooth
+bluez
+blueman
+
+# Firmware
+firmware-iwlwifi
+firmware-realtek
+firmware-misc-nonfree
+firmware-linux-nonfree
+
+# Browser
+firefox
+
+# Terminal
+lxterminal
+
+# Fonts
+fonts-inter
+
+# Icons
+papirus-icon-theme
+
+# GTK engines
+gtk2-engines-murrine
+gtk2-engines-pixbuf
+
+# Plymouth boot animation
+plymouth
+plymouth-themes
+
+# Python (for custom GTK components)
+python3
+python3-gi
+python3-gi-cairo
+python3-flask
+python3-psutil
+gir1.2-gtk-3.0
+gir1.2-webkit2-4.1
+gir1.2-notify-0.7
+
+# System tools
+xdotool
+xprop
+wmctrl
+brightnessctl
+rfkill
+lm-sensors
+power-profiles-daemon
+zenity
+
+# Gaming core
+steam
+gamemode
+gamescope
+mangohud
+vulkan-tools
+mesa-vulkan-drivers
+libvulkan1
+
+# Wine + compatibility layer
+wine
+wine64
+winetricks
+lutris
+playonlinux
+
+# Steam dependencies + device support
+steam-devices
+
+# Controller support
+joystick
+jstest-gtk
+antimicrox
+
+# Performance tuning
+cpufrequtils
+thermald
+
+# Emulation
+retroarch
+libretro-core-info
+
+# Media codecs (required by many games)
+ffmpeg
+gstreamer1.0-plugins-bad
+gstreamer1.0-plugins-ugly
+gstreamer1.0-libav
+
+# GPU tools
+nvtop
+mesa-opencl-icd
+clinfo
+
+# Utilities
+curl
+wget
+git
+unzip
+zip
+htop
+neofetch

@@ -1,0 +1,23 @@
+#!/bin/sh
+set -e
+lb config noauto \
+    --architectures amd64 \
+    --distribution noble \
+    --binary-images iso \
+    --archive-areas "main restricted universe multiverse" \
+    --mirror-bootstrap "http://archive.ubuntu.com/ubuntu" \
+    --mirror-chroot "http://archive.ubuntu.com/ubuntu" \
+    --mirror-binary "http://archive.ubuntu.com/ubuntu" \
+    --mirror-binary-security "http://security.ubuntu.com/ubuntu" \
+    --security false \
+    --bootloader "grub2" \
+    --bootappend-live "boot=live components persistence splash quiet user-fullname=Luna" \
+    --iso-application "Luna OS" \
+    --iso-publisher "Luna OS Project" \
+    --iso-volume "LUNA-OS" \
+    --memtest none \
+    --win32-loader false \
+    --apt-recommends false \
+    --apt-source-archives false \
+    --cache-packages false \
+    "${@}"

@@ -1,0 +1,36 @@
+#!/bin/sh
+set -e
+echo "[luna-hook] Installing luatools-moon Steam integration..."
+
+if ! command -v steam >/dev/null 2>&1; then
+    echo "[luna-hook] Steam not found, skipping luatools-moon installation."
+    exit 0
+fi
+
+INSTALL_DIR="/opt/luatools-moon"
+mkdir -p "$INSTALL_DIR"
+
+git clone --depth 1 https://github.com/swwayps/luatools-moon.git "$INSTALL_DIR/src" 2>/dev/null || {
+    echo "[luna-hook] Warning: Could not clone luatools-moon (no network?). Skipping."
+    exit 0
+}
+
+cp -r "$INSTALL_DIR/src/linux/"* "$INSTALL_DIR/" 2>/dev/null || true
+cp "$INSTALL_DIR/src/install.sh" "$INSTALL_DIR/install.sh" 2>/dev/null || true
+cp "$INSTALL_DIR/src/uninstall.sh" "$INSTALL_DIR/uninstall.sh" 2>/dev/null || true
+chmod +x "$INSTALL_DIR/install.sh" "$INSTALL_DIR/uninstall.sh" 2>/dev/null || true
+
+cat > /usr/local/bin/luatools-setup << 'SETUP'
+#!/bin/sh
+echo "Setting up LuaTools Moon for Steam..."
+cd /opt/luatools-moon
+if [ -f install.sh ]; then
+    bash install.sh
+else
+    echo "LuaTools files not found. Check /opt/luatools-moon/"
+fi
+SETUP
+chmod +x /usr/local/bin/luatools-setup
+
+echo "[luna-hook] luatools-moon staged at /opt/luatools-moon"
+echo "[luna-hook] Users can run 'luatools-setup' after Steam first launch."

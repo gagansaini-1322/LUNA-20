@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Luna Dock
+Exec=python3 /opt/luna-dock/dock.py
+NoDisplay=true
+X-GNOME-Autostart-enabled=true
