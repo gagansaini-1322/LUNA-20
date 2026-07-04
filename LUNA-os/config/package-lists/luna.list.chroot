@@ -4,6 +4,12 @@ live-config
 live-config-systemd
 user-setup
 
+# Boot (GRUB BIOS + EFI for hybrid ISO support)
+grub-pc-bin
+grub-common
+grub2-common
+grub-efi-amd64-bin
+
 # Desktop environment
 xfce4
 xfce4-terminal
