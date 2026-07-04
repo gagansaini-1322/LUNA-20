@@ -17,7 +17,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            live-build xorriso isolinux syslinux-common \
+            live-build xorriso isolinux syslinux-common syslinux-utils \
             debootstrap squashfs-tools bc
 
       - name: Build Luna OS ISO
