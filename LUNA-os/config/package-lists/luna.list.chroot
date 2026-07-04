@@ -90,7 +90,8 @@ earlyoom
 ufw
 
 # Gaming core
-steam
+# Steam is installed post-boot via the install-steam hook because it
+# requires i386 multiarch support which is not pre-enabled.
 gamemode
 libgamemode0
 mangohud
