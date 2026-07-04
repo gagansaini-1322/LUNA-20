@@ -29,6 +29,10 @@ jobs:
           sudo cp -aL /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/ || \
             sudo cp -a /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/
           ls -la LUNA-os/config/bootloaders/isolinux/
+          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (package doesn't exist on Noble)
+          # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode
+          sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
+          sudo tar czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -T /dev/null
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
