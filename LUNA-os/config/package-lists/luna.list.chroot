@@ -19,10 +19,8 @@ thunar-volman
 lightdm
 lightdm-gtk-greeter
 
-# Audio (PulseAudio + PipeWire stack - PipeWire drops in via pipewire-pulse)
-pulseaudio
+# Audio (PipeWire — modern, replaces PulseAudio entirely)
 pavucontrol
-pulseaudio-module-bluetooth
 pipewire
 pipewire-pulse
 pipewire-audio
