@@ -11,6 +11,7 @@ lb config noauto \
     --mirror-binary-security "http://security.ubuntu.com/ubuntu" \
     --security false \
     --bootloader "syslinux" \
+    --syslinux-theme "live-build" \
     --bootappend-live "boot=live components persistence splash quiet user-fullname=Luna" \
     --iso-application "Luna OS" \
     --iso-publisher "Luna OS Project" \
