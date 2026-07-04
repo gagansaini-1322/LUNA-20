@@ -7,6 +7,7 @@ user-setup
 # Boot (isolinux for BIOS, grub-efi for future UEFI support)
 isolinux
 syslinux-common
+gfxboot-theme-ubuntu
 grub-efi-amd64-bin
 
 # Desktop environment
