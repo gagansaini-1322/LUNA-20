@@ -1,0 +1,14 @@
+[Unit]
+Description=Luna Telemetry Daemon
+After=default.target
+StartLimitIntervalSec=30
+StartLimitBurst=5
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/luna-telemetryd
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

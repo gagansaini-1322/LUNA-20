@@ -1,157 +1,254 @@
-/* Luna OS GTK3 Theme Overrides */
+/* === Luna OS GTK3 theme overrides === */
 
-/* ===== Context Menu Styling ===== */
+/* --------------------- Global font + background --------------------- */
+* {
+    font-family: Inter, "Inter Variable", "Cantarell", "Noto Sans", sans-serif;
+    -GtkWidget-interior-focus: 1;
+}
+
+window,
+dialog,
+messagedialog {
+    background-color: #10131a;
+    color: #E8EAF0;
+}
+
+/* --------------------- Context menubar (right-click menus) --------------------- */
+popover,
 menu,
-.context-menu,
- GtkMenu {
+.menubar,
+menubar > menu {
     background-color: #1a1d2e;
-    border-radius: 14px;
+    color: #E8EAF0;
     border: 1px solid #2a2d3f;
-    padding: 6px 0;
+    border-radius: 14px;
+    padding: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.6),
+                0 0 0 1px rgba(99,102,241,0.08);
 }
 
-menu item,
-context-menu menuitem {
-    padding: 8px 24px 8px 16px;
+menuitem,
+.menuitem,
+popover > *:not(separator) {
+    background-color: transparent;
+    color: #E8EAF0;
     border-radius: 8px;
-    margin: 2px 6px;
-    color: #E8EAF0;
-    font-family: "Inter", sans-serif;
-    font-size: 14px;
+    padding: 6px 14px;
+    min-height: 22px;
 }
 
-menu item:hover,
-context-menu menuitem:hover,
-menu item:selected,
-context-menu menuitem:selected {
+menuitem:hover,
+.menuitem:hover,
+popover > *:not(separator):hover {
     background-color: #252840;
-    color: #E8EAF0;
+    color: #ffffff;
 }
 
-menu item:disabled,
-context-menu menuitem:disabled {
+menuitem:disabled,
+.menuitem:disabled,
+popover > *:disabled {
     color: #4a4d60;
 }
 
-menu separator,
-context-menu separator {
-    background-color: #2a2d3f;
-    margin: 4px 12px;
-    min-height: 1px;
+menuitem accelerator,
+.menuitem accelerator {
+    color: #8BA3B2;
 }
 
-/* ===== Thunar File Manager ===== */
+popover > separator,
+.menu separator,
+menubar separator {
+    background-color: #2a2d3f;
+    margin: 4px 8px;
+    min-height: 1px;
+    border: none;
+}
+
+accelerator {
+    color: #8BA3B2;
+}
+
+popover > .image,
+popover > menuitem > box > .image,
+menuitem > box > .image {
+    margin-right: 8px;
+}
+
+/* --------------------- Thunar sidebar / window --------------------- */
 .thunar .sidebar,
-.thunar .sidebar .view {
+.sidebar,
+paned > .pane > .sidebar,
+notebook > stack > .sidebar {
     background-color: #0f1117;
     color: #E8EAF0;
+    border-right: 1px solid #1e2030;
 }
 
-.thunar .sidebar row:selected,
-.thunar .sidebar .view:selected {
+.sidebar row,
+.sidebar .list-row,
+.sidebar list row,
+.sidebar iconview,
+.sidebar treeview {
+    background-color: transparent;
+    color: #E8EAF0;
+    padding: 6px 8px;
+    border-radius: 6px;
+}
+
+.sidebar row:selected,
+.sidebar .list-row:selected,
+sidebar list row:selected,
+.icon-view .file:selected,
+.icon-view .thumbnail:selected,
+treeview.view:selected,
+treeview.view row:selected {
     background-color: #5B5BD6;
     color: #ffffff;
+    border-radius: 6px;
 }
 
-.thunar .toolbar,
-.thunar .header-bar {
-    background-color: #12141c;
-    border-bottom: 1px solid #1e2030;
-    color: #E8EAF0;
-}
-
-.thunar .view {
-    background-color: #12141c;
-    color: #E8EAF0;
-}
-
-.thunar .view:selected,
-.thunar .icon-view:selected {
-    background-color: #6366F1;
-    border-radius: 8px;
-}
-
-.thunar .view:hover,
-.thunar .icon-view:hover {
+.sidebar row:hover,
+.sidebar .list-row:hover,
+.sidebar list row:hover,
+.tree-view:hover,
+iconview:hover {
     background-color: #1a1d2e;
 }
 
-.thunar scrollbar {
+toolbar,
+.toolbar {
     background-color: #12141c;
+    border-bottom: 1px solid #1e2030;
+    padding: 4px;
 }
 
-.thunar scrollbar slider {
-    background-color: #3a3d50;
-    border-radius: 12px;
-    min-width: 8px;
-}
-
-/* ===== General Widget Overrides ===== */
-GtkTreeView,
-GtkIconView,
-GtkTextView {
-    background-color: #12141c;
+toolbar button,
+.toolbar button {
+    background-color: transparent;
     color: #E8EAF0;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
 }
 
-GtkTreeView:selected,
-GtkIconView:selected,
-GtkTextView:selected {
+toolbar button:hover {
+    background-color: #1f2230;
+}
+
+button {
+    background-color: #1b1f2a;
+    color: #E8EAF0;
+    border: 1px solid #1e2030;
+    border-radius: 8px;
+    padding: 6px 14px;
+}
+
+button:hover {
+    background-color: #252840;
+    border-color: #6366F1;
+}
+
+button:default,
+button.suggested-action {
+    background-color: #6366F1;
+    border-color: #6366F1;
+    color: #ffffff;
+}
+
+/* Scrollbars */
+scrollbar {
+    background-color: #0f1117;
+    border: none;
+}
+
+scrollbar slider {
+    background-color: #2a2d3f;
+    border-radius: 8px;
+    min-width: 8px;
+    min-height: 8px;
+    margin: 2px;
+}
+
+scrollbar slider:hover {
+    background-color: #6366F1;
+}
+
+/* --------------------- Selections / focus --------------------- */
+selection,
+*:selected,
+*:focus {
     background-color: #6366F1;
     color: #ffffff;
 }
 
- GtkEntry {
-    background-color: #1a1d2e;
+entry,
+textview,
+.entry,
+GtkEntry {
+    background-color: #1b1f2a;
     color: #E8EAF0;
-    border: 1px solid #2a2d3f;
+    border: 1px solid #1e2030;
     border-radius: 8px;
     padding: 6px 10px;
 }
 
- GtkEntry:focus {
+entry:focus,
+.entry:focus {
     border-color: #6366F1;
+    box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
 }
 
- GtkButton {
-    background-color: #1a1d2e;
+notebook tabs,
+notebook > header > tabs {
+    background-color: #10131a;
+}
+
+notebook tab,
+tab {
+    background-color: #12141c;
+    color: #8BA3B2;
+    border-radius: 8px;
+    padding: 6px 12px;
+    margin: 2px;
+}
+
+notebook tab:checked,
+tab:checked {
+    background-color: #1b1f2a;
+    color: #E8EAF0;
+    border-bottom: 2px solid #6366F1;
+}
+
+progressbar,
+progress {
+    background-color: #1f2230;
+    border-radius: 4px;
+}
+
+progressbar progress,
+progressbar trough,
+progress progress,
+progress trough {
+    background-color: #6366F1;
+    border-radius: 4px;
+}
+
+checkbutton check,
+radiobutton radio {
+    background-color: #1b1f2a;
+    border: 1px solid #2a2d3f;
+}
+
+checkbutton check:checked,
+radiobutton radio:checked {
+    background-color: #6366F1;
+    color: #ffffff;
+}
+
+tooltip {
+    background-color: #1b1f2a;
     color: #E8EAF0;
     border: 1px solid #2a2d3f;
-    border-radius: 8px;
-    padding: 6px 16px;
-}
-
- GtkButton:hover {
-    background-color: #252840;
-}
-
- GtkButton:active {
-    background-color: #6366F1;
-}
-
- GtkLabel {
-    color: #E8EAF0;
-    font-family: "Inter", sans-serif;
-}
-
- GtkHeaderBar {
-    background-color: #0F0F14;
-    color: #E8EAF0;
-    border-bottom: 1px solid #1e2030;
-}
-
- GtkScrolledWindow {
-    background-color: #12141c;
-}
-
- GtkWindow,
- dialog {
-    background-color: #0F0F14;
-    color: #E8EAF0;
-}
-
- GtkFrame,
- .frame {
-    border: 1px solid #1e2030;
-    border-radius: 8px;
+    border-radius: 6px;
+    padding: 4px 8px;
 }

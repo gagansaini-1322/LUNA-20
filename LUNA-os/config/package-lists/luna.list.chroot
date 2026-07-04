@@ -19,25 +19,29 @@ thunar-volman
 lightdm
 lightdm-gtk-greeter
 
-# Audio
+# Audio (PulseAudio + PipeWire stack - PipeWire drops in via pipewire-pulse)
 pulseaudio
 pavucontrol
 pulseaudio-module-bluetooth
+pipewire
+pipewire-pulse
+pipewire-audio
+wireplumber
 
 # Network
 network-manager
 network-manager-gnome
 wireless-tools
+wpasupplicant
 
 # Bluetooth
 bluez
 blueman
 
-# Firmware
-firmware-iwlwifi
-firmware-realtek
-firmware-misc-nonfree
-firmware-linux-nonfree
+# Firmware + microcode (Noble consolidated firmware-* into linux-firmware)
+linux-firmware
+intel-microcode
+amd64-microcode
 
 # Browser
 firefox
@@ -47,6 +51,7 @@ lxterminal
 
 # Fonts
 fonts-inter
+fonts-noto-core
 
 # Icons
 papirus-icon-theme
@@ -58,6 +63,7 @@ gtk2-engines-pixbuf
 # Plymouth boot animation
 plymouth
 plymouth-themes
+plymouth-x11
 
 # Python (for custom GTK components)
 python3
@@ -65,6 +71,7 @@ python3-gi
 python3-gi-cairo
 python3-flask
 python3-psutil
+python3-requests
 gir1.2-gtk-3.0
 gir1.2-webkit2-4.1
 gir1.2-notify-0.7
@@ -78,22 +85,52 @@ rfkill
 lm-sensors
 power-profiles-daemon
 zenity
+systemd-zram-generator
+earlyoom
+ufw
 
 # Gaming core
 steam
 gamemode
-gamescope
+libgamemode0
+glmark2-x11
 mangohud
 vulkan-tools
 mesa-vulkan-drivers
 libvulkan1
+vulkan-validationlayers
+
+# GPU drivers (NVIDIA proprietary branch — pick one. 535 is most-tested LTS.)
+nvidia-driver-535
+libnvidia-common-535
+libnvidia-fbc1-535
+libnvidia-gl-535
+libnvidia-compute-535
+libnvidia-decode-535
+libnvidia-encode-535
+libnvidia-extra-535
+xserver-xorg-video-nvidia-535
+
+# Mesa OpenCL for AMD/Intel
+mesa-opencl-icd
+clinfo
+intel-opencl-icd
 
 # Wine + compatibility layer
 wine
 wine64
 winetricks
+libwine:i386
+libasound2t64:i386
+libasound2-plugins:i386
+
+# Wine / Proton fronts
 lutris
 playonlinux
+
+# LuaTools Moon — Steam Lua plugin integration
+# Install via hook: git clone https://github.com/swwayps/luatools-moon /opt/luatools-moon
+# User runs: luatools-setup (after Steam first launch)
 
 # Steam dependencies + device support
 steam-devices
@@ -102,6 +139,7 @@ steam-devices
 joystick
 jstest-gtk
 antimicrox
+xboxdrv
 
 # Performance tuning
 cpufrequtils
@@ -116,11 +154,34 @@ ffmpeg
 gstreamer1.0-plugins-bad
 gstreamer1.0-plugins-ugly
 gstreamer1.0-libav
+gstreamer1.0-plugins-base
+gstreamer1.0-plugins-good
+ffmpegthumbnailer
 
-# GPU tools
+# Streaming / recording
+obs-studio
+
+# System monitoring
 nvtop
-mesa-opencl-icd
-clinfo
+btop
+
+# Filesystem support (game drives are often exFAT/NTFS)
+exfatprogs
+ntfs-3g
+dosfstools
+e2fsprogs
+
+# Compression (games often ship as .7z / .zip / .rar)
+p7zip-full
+unrar
+lz4
+zstd
+
+# Benchmarking
+mesa-utils
+
+# Networking extras (torrent downloads, etc.)
+transmission-gtk
 
 # Utilities
 curl
@@ -130,3 +191,48 @@ unzip
 zip
 htop
 neofetch
+openssh-client
+ca-certificates
+gnome-software-plugin-flatpak
+flatpak
+
+# Qt 6 — user runtime (Luna Hub UI)
+libqt6svg6
+qml6-module-qt-labs-settings
+qml6-module-qtgraphicaleffects
+qml6-module-qtless
+qml6-module-qtquick
+qml6-module-qtquick-controls
+qt6-base
+qt6-declarative
+qt6-quick3d
+qt6-quickcontrols2
+qt6-tools-dev
+qt6-translations
+qt6-wayland
+
+# Qt 6 — dev headers (for chroot build hook)
+qml6-module-qtquick-dev
+qt6-base-dev
+qt6-declarative-dev
+qt6-quickcontrols2-dev
+qt6-tools-dev
+
+# Build toolchain required by 0200-build-luna-hub.hook.chroot
+build-essential
+clang
+cmake
+ninja-build
+pkg-config
+
+# Rust toolchain (for luna-telemetryd build)
+cargo
+librust-std-x86_64-unknown-linux-gnu
+rustc
+rustup
+
+# IPC / D-Bus client deps (for Luna Hub telemetryd bridge)
+libdbus-1-dev
+
+# Systemd user session enablement
+dbus-user-session

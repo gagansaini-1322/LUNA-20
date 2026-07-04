@@ -1,5 +1,8 @@
+# Luna OS — Suppress XFCE default panel
+# Luna Top Bar replaces the default panel completely
 [Desktop Entry]
 Type=Application
 Name=XFCE Panel
 Exec=xfce4-panel
 Hidden=true
+NoDisplay=true

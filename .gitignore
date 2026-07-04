@@ -1,25 +1,20 @@
-# Build artifacts
+# Build artefacts
 *.iso
+build/
 build.log
 .cache/
-.chroot/
-.packages*
-.iso.hybrid
-.binary/
-chroot/
-config/cache/
 
-# Live-build working directories
-config/includes.chroot/
-!config/includes.chroot/
+# live-build output
+LUNA-os/auto/config
+!LUNA-os/auto/config.lb
 
-# Editor/IDE
+# Editor / OS junk
+.DS_Store
 .vscode/
 .idea/
 *.swp
-*.swo
 *~
 
-# OS files
-.DS_Store
-Thumbs.db
+# Local secrets
+.env
+.env.local

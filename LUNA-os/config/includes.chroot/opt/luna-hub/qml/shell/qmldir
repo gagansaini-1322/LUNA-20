@@ -1,0 +1,8 @@
+module LunaHub.Shell
+AppShell 1.0 AppShell.qml
+Sidebar 1.0 Sidebar.qml
+SidebarItem 1.0 SidebarItem.qml
+TopBar 1.0 TopBar.qml
+WindowControls 1.0 WindowControls.qml
+NotificationLayer 1.0 NotificationLayer.qml
+DialogLayer 1.0 DialogLayer.qml

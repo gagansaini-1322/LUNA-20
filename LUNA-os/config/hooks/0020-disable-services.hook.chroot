@@ -2,15 +2,34 @@
 set -e
 echo "[luna-hook] Disabling non-essential services..."
 for svc in cups cups-browsed avahi-daemon ModemManager \
-           whoopsie apport saned colord; do
-    systemctl disable "$svc" 2>/dev/null || true
-    systemctl mask "$svc" 2>/dev/null || true
+           whoopsie apport saned colord snapd snapd.socket snapd.seeded; do
+    if command -v systemctl >/dev/null 2>&1; then
+        systemctl disable "$svc" 2>/dev/null || true
+        systemctl mask "$svc" 2>/dev/null || true
+    fi
 done
 
 echo "[luna-hook] Blacklisting unused modules..."
+mkdir -p /etc/modprobe.d
 cat > /etc/modprobe.d/luna-blacklist.conf << 'EOF'
 blacklist usblp
 blacklist uvcvideo
 blacklist lirc_dev
+blacklist snd_pcsp
+blacklist pcspkr
 EOF
+
+echo "[luna-hook] Tuning sysctl for gaming..."
+cat > /etc/sysctl.d/99-luna-gaming.conf << 'EOF'
+vm.swappiness = 10
+vm.dirty_ratio = 10
+vm.dirty_background_ratio = 5
+kernel.nmi_watchdog = 0
+EOF
+
+echo "[luna-hook] Setting fstrim.timer"
+if command -v systemctl >/dev/null 2>&1; then
+    systemctl enable fstrim.timer 2>/dev/null || true
+fi
+
 echo "[luna-hook] Services trimmed."

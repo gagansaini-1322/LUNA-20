@@ -1,0 +1,5 @@
+module LunaHub.Dialogs
+GameSelectionDialog 1.0 GameSelectionDialog.qml
+ConfirmationDialog 1.0 ConfirmationDialog.qml
+BoostDetailsDialog 1.0 BoostDetailsDialog.qml
+DiagnosticsDialog 1.0 DiagnosticsDialog.qml

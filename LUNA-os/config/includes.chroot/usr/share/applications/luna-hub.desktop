@@ -1,6 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=Luna Hub
-Exec=python3 /opt/luna-hub/launcher.py
-Icon=luna-hub
-Categories=System;
+GenericName=System Monitor
+Comment=Real-time gaming telemetry and system control center
+Exec=/usr/bin/luna-hub
+Icon=luna-logo
+Categories=System;Monitor;
+Terminal=false
+StartupNotify=true
+Keywords=system;monitor;telemetry;cpu;gpu;memory;fan;temperature;games;

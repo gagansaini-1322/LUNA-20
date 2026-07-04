@@ -1,287 +1,324 @@
 #!/usr/bin/env python3
-"""Luna Settings - Custom settings window for Luna OS"""
+"""Luna OS Settings window — dark themed GTK3 settings panel."""
 
 import os
-import subprocess
 import shutil
-import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('Gdk', '3.0')
-from gi.repository import Gtk, Gdk, GLib
+import signal
+import subprocess
 
-BG = "#0F0F14"
-SURFACE = "#1a1d2e"
-SELECTED = "#5B5BD6"
-TEXT_PRIMARY = "#E8EAF0"
-TEXT_SECONDARY = "#8b93a7"
-BORDER = "#1e2030"
+import gi
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
+from gi.repository import Gtk, Gdk, GLib, GdkPixbuf
+
+WIN_W = 900
+WIN_H = 620
+TITLE_H = 38
+
+PRIMARY = (0.388, 0.4, 0.945)
+SELECTED = (0.357, 0.357, 0.839)
+BG = (0.063, 0.075, 0.102)
+CARD = (0.106, 0.122, 0.165)
+BORDER = (0.118, 0.125, 0.188)
+TEXT = (0.91, 0.92, 0.94)
+MUTED = (0.546, 0.576, 0.686)
+
 
 CATEGORIES = [
-    {"name": "System", "icon": "preferences-system", "items": [
-        {"label": "About", "icon": "help-about", "cmd": "luna-about"},
-        {"label": "Date & Time", "icon": "preferences-system-time", "cmd": "xfce4-datetime-settings"},
-        {"label": "Users and Groups", "icon": "system-users", "cmd": "users-admin"},
-        {"label": "Software & Updates", "icon": "system-software-update", "cmd": "software-properties-gtk"},
-    ]},
-    {"name": "Bluetooth", "icon": "bluetooth", "items": [
-        {"label": "Bluetooth Settings", "icon": "bluetooth", "cmd": "blueman-manager"},
-    ]},
-    {"name": "Network", "icon": "network-wireless", "items": [
-        {"label": "Network Connections", "icon": "network-wireless", "cmd": "nm-connection-editor"},
-        {"label": "Network Proxy", "icon": "network-proxy", "cmd": "xfce4-settings-manager -p networking"},
-    ]},
-    {"name": "Personalization", "icon": "preferences-desktop-wallpaper", "items": [
-        {"label": "Appearance", "icon": "preferences-desktop-theme", "cmd": "xfce4-settings-manager -p appearance"},
-        {"label": "Desktop", "icon": "preferences-desktop-wallpaper", "cmd": "xfce4-settings-manager -p desktop"},
-        {"label": "Panel", "icon": "preferences-panel", "cmd": "xfce4-settings-manager -p panel"},
-        {"label": "Window Manager", "icon": "xfce-wm", "cmd": "xfce4-settings-manager -p wm"},
-    ]},
-    {"name": "Apps", "icon": "system-file-manager", "items": [
-        {"label": "Default Applications", "icon": "system-file-manager", "cmd": "xfce4-settings-manager -p default-apps"},
-        {"label": "File Manager", "icon": "thunar", "cmd": "thunar --bulk-rename"},
-    ]},
-    {"name": "Notifications", "icon": "dialog-information", "items": [
-        {"label": "Notifications", "icon": "dialog-information", "cmd": "xfce4-settings-manager -p notifications"},
-    ]},
-    {"name": "Sound", "icon": "audio-volume-high", "items": [
-        {"label": "Volume Control", "icon": "audio-volume-high", "cmd": "pavucontrol"},
-        {"label": "Sound Settings", "icon": "audio-volume-high", "cmd": "xfce4-settings-manager -p sound"},
-    ]},
-    {"name": "Power", "icon": "system-suspend", "items": [
-        {"label": "Power Manager", "icon": "system-suspend", "cmd": "xfce4-power-manager-settings"},
-        {"label": "Performance Mode", "icon": "utilities-system-monitor", "cmd": "powerprofilesctl get"},
-    ]},
-    {"name": "Privacy", "icon": "system-lock-screen", "items": [
-        {"label": "Screen Lock", "icon": "system-lock-screen", "cmd": "xfce4-screensaver-preferences"},
-    ]},
-    {"name": "About", "icon": "help-about", "items": [
-        {"label": "About Luna OS", "icon": "luna-logo", "cmd": "luna-about"},
-    ]},
+    ("System", "preferences-system",
+     [("Display", "preferences-desktop-display", "xfce4-display-settings"),
+      ("Keyboard", "preferences-desktop-keyboard", "xfce4-keyboard-settings"),
+      ("Mouse & Touchpad", "input-mouse", "xfce4-mouse-settings"),
+      ("Date & Time", "preferences-system-time", "xfce4-time-out-plugin"),
+      ("Default Apps", "preferences-system-windows", "xfce4-session-settings")]),
+    ("Bluetooth", "bluetooth",
+     [("Manage Devices", "bluetooth", "blueman-manager"),
+      ("Send / Receive Files", "bluetooth", "blueman-services")]),
+    ("Network", "network",
+     [("Wi-Fi", "network-wireless", "nm-connection-editor"),
+      ("VPN", "network-vpn", "nm-connection-editor"),
+      ("Proxy", "preferences-system-network", "xfce4-settings-manager --proxy"),
+      ("Firewall", "network-server", "gufw")]),
+    ("Personalization", "preferences-desktop-wallpaper",
+     [("Wallpaper", "preferences-desktop-wallpaper", "/usr/lib/luna-app-store/luna-set-wallpaper default"),
+      ("Appearance", "preferences-desktop-theme", "xfce4-appearance-settings"),
+      ("Fonts", "preferences-fonts", "xfce4-appearance-settings --fonts"),
+      ("Window Manager", "preferences-system-windows", "xfwm4-settings"),
+      ("Panel", "preferences-panel", "xfce4-panel --prefs")]),
+    ("Apps", "applications-system",
+     [("Default Apps", "preferences-system-windows", "xfce4-session-settings"),
+      ("Permissions", "preferences-system-privacy", "polkit-gnome-authorization")]),
+    ("Notifications", "preferences-system-notifications",
+     [("Toggle Notifications", "preferences-system-notifications", "xfce4-notifyd-config"),
+      ("DND", "preferences-system-notifications", "xfce4-notifyd-config")]),
+    ("Sound", "audio-volume",
+     [("Output", "audio-speakers", "pavucontrol"),
+      ("Input", "audio-input-microphone", "pavucontrol --record"),
+      ("Profiles", "audio-card", "pavucontrol")]),
+    ("Power", "battery",
+     [("Power Profiles", "power-profile-performance", "xfce4-power-manager-settings"),
+      ("Battery", "battery", "xfce4-power-manager-settings"),
+      ("Sleep", "preferences-screensaver", "xfce4-screensaver-preferences")]),
+    ("Privacy", "preferences-system-privacy",
+     [("Screen Lock", "preferences-screensaver", "light-locker"),
+      ("Location", "location", "xfce4-settings-manager"),
+      ("Camera", "camera", "guvcview")]),
+    ("About", "help-about",
+     [("About Luna OS", "help-about", "/usr/local/bin/luna-about"),
+      ("System Info", "computer", "neofetch"),
+      ("Updates", "system-software-update", "software-properties-gtk")]),
 ]
 
 
-class SettingsWindow(Gtk.Window):
+class SettingsWin(Gtk.Window):
     def __init__(self):
-        super().__init__(title="Settings")
-        self.set_default_size(900, 620)
-        self.set_resizable(False)
+        super().__init__()
+        self.set_title("Luna Settings")
+        self.set_default_size(WIN_W, WIN_H)
+        self.set_resizable(True)
+        self.set_size_request(720, 480)
         self.set_decorated(False)
+        self.set_app_paintable(True)
         self.set_position(Gtk.WindowPosition.CENTER)
 
-        self.selected_cat = 0
+        self._drag_offset = None
+        self._current_cat = 0
+        self._content_rows = []
 
-        # Main vertical box
-        vbox = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.add(vbox)
+        css = Gtk.CssProvider()
+        css.load_from_data(b"""
+            window {
+                background-color: #10131a;
+            }
+            .sidebar {
+                background: #0f1117;
+            }
+            .sidebar row {
+                background: transparent;
+                color: #E8EAF0;
+                border-radius: 8px;
+                padding: 8px 14px;
+                margin: 2px 6px;
+                font-size: 13px;
+                font-weight: 600;
+            }
+            .sidebar row:hover {
+                background: #1a1d2e;
+            }
+            .sidebar row:selected {
+                background: #5B5BD6;
+                color: #ffffff;
+            }
+            .topbar {
+                background: #0F1117;
+            }
+            .panel {
+                background: #10131a;
+            }
+            .row:hover {
+                background: #1a1d2e;
+            }
+            .row {
+                padding: 10px 14px;
+                border-bottom: 1px solid #1e2030;
+            }
+            .row-text {
+                color: #E8EAF0;
+                font-size: 13px;
+            }
+            .chev {
+                color: #8b93a7;
+                font-size: 16px;
+            }
+        """)
+        Gtk.StyleContext.add_provider_for_screen(
+            Gdk.Screen.get_default(), css,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-        # Custom titlebar
-        titlebar = Gtk.DrawingArea()
-        titlebar.set_size_request(-1, 40)
-        titlebar.connect("draw", self.draw_titlebar)
-        titlebar.add_events(Gdk.EventMask.BUTTON_PRESS_MASK | Gdk.EventMask.BUTTON_MOTION_MASK)
-        titlebar.connect("button-press-event", self.on_titlebar_click)
-        titlebar.connect("motion-notify-event", self.on_titlebar_drag)
-        self.titlebar_widget = titlebar
-        self._dragging = False
-        self._drag_x = 0
-        self._drag_y = 0
-        vbox.pack_start(titlebar, False, False, 0)
+        outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        self.add(outer)
 
-        # Content area
-        content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
-        vbox.pack_start(content, True, True, 0)
+        topbar = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        topbar.set_size_request(-1, TITLE_H)
+        topbar.get_style_context().add_class("topbar")
+        outer.pack_start(topbar, False, False, 0)
 
-        # Sidebar
-        self.sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
-        self.sidebar.set_size_request(240, -1)
-        self.sidebar.set_margin_top(8)
-        self.sidebar.set_margin_bottom(8)
-        self.sidebar.set_margin_start(8)
-        self.sidebar.set_margin_end(4)
-        scrolled_sidebar = Gtk.ScrolledWindow()
-        scrolled_sidebar.add(self.sidebar)
-        scrolled_sidebar.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        content.pack_start(scrolled_sidebar, False, False, 0)
+        back = Gtk.Button.new_from_icon_name("go-previous-symbolic", Gtk.IconSize.BUTTON)
+        back.set_relief(Gtk.ReliefStyle.NONE)
+        back.set_size_request(48, TITLE_H)
+        back.connect("clicked", lambda *_: self.destroy())
+        topbar.pack_start(back, False, False, 0)
 
-        # Sidebar separator
-        sep = Gtk.Separator(orientation=Gtk.Orientation.VERTICAL)
-        content.pack_start(sep, False, False, 0)
+        title = Gtk.Label()
+        title.set_markup("<b>Settings</b>")
+        title.set_xalign(0.0)
+        title.get_style_context().add_class("title")
+        title.set_margin_start(8)
+        topbar.pack_start(title, True, True, 0)
 
-        # Right panel
-        self.right_panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.right_panel.set_margin_start(16)
-        self.right_panel.set_margin_end(16)
-        self.right_panel.set_margin_top(16)
-        self.right_panel.set_margin_bottom(16)
-        scrolled_right = Gtk.ScrolledWindow()
-        scrolled_right.add(self.right_panel)
-        scrolled_right.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
-        content.pack_start(scrolled_right, True, True, 0)
+        traffic = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=6)
+        traffic.set_margin_end(14)
+        for color, ti in (("#FFBD2E", "minimize"), ("#27C840", "maximize"), ("#FF5F57", "close")):
+            b = Gtk.Button()
+            b.set_size_request(14, 14)
+            b.set_relief(Gtk.ReliefStyle.NONE)
+            css2 = Gtk.CssProvider()
+            css2.load_from_data(
+                ("* { background-color:%s; border-radius:50%%; border:none;"
+                 " min-width:14px; min-height:14px; padding:0; }") % color)
+            ctx = b.get_style_context()
+            ctx.add_provider(css2, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
+            ctx.add_class("traffic")
+            if ti == "close":
+                b.connect("clicked", lambda *_: self.destroy())
+            traffic.pack_start(b, False, False, 0)
+        topbar.pack_end(traffic, False, False, 4)
 
-        self.build_sidebar()
-        self.build_right_panel(0)
-        self.connect("destroy", lambda w: Gtk.main_quit())
-        self.show_all()
+        topbar_event = Gtk.EventBox()
+        topbar_event.set_above_child(False)
+        topbar_event.add(topbar)
+        topbar_event.connect("button-press-event", self._on_title_press)
+        topbar_event.connect("button-release-event", self._on_title_release)
+        overlay = Gtk.Fixed()
+        outer.add(overlay)
+        topbar_event.set_size_request(WIN_W, TITLE_H)
+        overlay.put(topbar_event, 0, 0)
 
-    def draw_titlebar(self, widget, cr):
-        w = widget.get_allocated_width()
-        h = widget.get_allocated_height()
+        body = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        body.set_size_request(WIN_W, WIN_H - TITLE_H)
+        outer.pack_start(body, True, True, 0)
+        body.connect("size-allocate", lambda *_: None)
 
-        cr.set_source_rgb(15/255, 17/255, 23/255)
-        cr.rectangle(0, 0, w, h)
-        cr.fill()
+        sidebar = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        sidebar.get_style_context().add_class("sidebar")
+        sidebar.set_size_request(240, -1)
+        body.pack_start(sidebar, False, False, 0)
 
-        # Back arrow
-        cr.set_source_rgb(139/255, 163/255, 178/255)
-        cr.select_font_face("Inter", 0, 0)
-        cr.set_font_size(18)
-        cr.move_to(16, 28)
-        cr.show_text("‹")
+        self._list = Gtk.ListBox()
+        self._list.set_selection_mode(Gtk.SelectionMode.SINGLE)
+        self._list.get_style_context().add_class("sidebar")
+        sidebar.pack_start(self._list, True, True, 0)
 
-        # Title
-        cr.set_source_rgb(232/255, 234/255, 240/255)
-        cr.set_font_size(14)
-        cr.move_to(40, 28)
-        cr.show_text("Settings")
+        for label, icon, _rows in CATEGORIES:
+            row = Gtk.ListBoxRow()
+            h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            h.set_margin_start(8)
+            h.set_margin_end(8)
+            try:
+                img = Gtk.Image.new_from_icon_name(icon, Gtk.IconSize.LARGE_TOOLBAR)
+            except Exception:
+                img = Gtk.Image.new_from_icon_name("applications-system", Gtk.IconSize.LARGE_TOOLBAR)
+            h.pack_start(img, False, False, 0)
+            l = Gtk.Label(label=label)
+            l.set_xalign(0.0)
+            h.pack_start(l, True, True, 0)
+            row.add(h)
+            self._list.add(row)
+        self._list.connect("row-selected", self._on_select_cat)
+        self._list.select_row(self._list.get_row_at_index(0))
 
-        # Traffic light buttons (top-right)
-        buttons = [
-            (w - 60, "#FFBD2E"),  # Yellow minimize
-            (w - 40, "#27C840"),  # Green maximize
-            (w - 20, "#FF5F57"),  # Red close
-        ]
-        for bx, color in buttons:
-            r, g, b = self._hex_to_rgb(color)
-            cr.set_source_rgb(r, g, b)
-            cr.arc(bx, 20, 7, 0, 2 * 3.14159)
-            cr.fill()
+        panel = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        panel.get_style_context().add_class("panel")
+        body.pack_start(panel, True, True, 0)
 
-    def _hex_to_rgb(self, h):
-        h = h.lstrip('#')
-        return tuple(int(h[i:i+2], 16)/255 for i in (0, 2, 4))
+        header = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
+        header.set_size_request(-1, 56)
+        header.set_margin_start(24)
+        header.set_margin_end(24)
+        header.set_valign(Gtk.Align.CENTER)
+        panel.pack_start(header, False, False, 0)
 
-    def on_titlebar_click(self, widget, event):
-        w = widget.get_allocated_width()
+        self._title = Gtk.Label()
+        self._title.set_markup("<b><span size='18000'>System</span></b>")
+        self._title.set_xalign(0.0)
+        header.pack_start(self._title, True, True, 0)
+
+        self._scroller = Gtk.ScrolledWindow()
+        self._scroller.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        panel.pack_start(self._scroller, True, True, 0)
+
+        self._list_box = Gtk.ListBox()
+        self._list_box.get_style_context().add_class("rows")
+        self._scroller.add(self._list_box)
+        self._render_cat(0)
+
+    def _on_title_press(self, _w, event):
         if event.button == 1:
-            if w - 20 <= event.x <= w:
-                self.destroy()
-                return True
-            self._dragging = True
-            self._drag_x = int(event.x_root)
-            self._drag_y = int(event.y_root)
-        elif event.button == 3:
-            pass
+            win = self.get_window()
+            if win is not None:
+                win.begin_move_drag(event.button, int(event.x_root), int(event.y_root),
+                                    event.time)
         return False
 
-    def on_titlebar_drag(self, widget, event):
-        if self._dragging:
-            dx = int(event.x_root) - self._drag_x
-            dy = int(event.y_root) - self._drag_y
-            x, y = self.get_position()
-            self.move(x + dx, y + dy)
-            self._drag_x = int(event.x_root)
-            self._drag_y = int(event.y_root)
+    def _on_title_release(self, _w, event):
+        self._drag_offset = None
+        return False
 
-    def build_sidebar(self):
-        for child in self.sidebar.get_children():
-            self.sidebar.remove(child)
+    def _on_select_cat(self, _w, row):
+        if row is None:
+            return
+        idx = row.get_index()
+        if idx < 0:
+            return
+        self._current_cat = idx
+        label, icon, _ = CATEGORIES[idx]
+        self._title.set_markup("<b><span size='18000'>%s</span></b>" % label)
+        self._render_cat(idx)
 
-        for i, cat in enumerate(CATEGORIES):
-            btn = Gtk.Button()
-            btn.set_relief(Gtk.ReliefStyle.NONE)
-            label_text = f"  {cat['icon']}  {cat['name']}"
-            lbl = Gtk.Label(label=cat['name'])
-            lbl.set_xalign(0)
-            lbl.set_margin_start(12)
-            lbl.set_margin_top(8)
-            lbl.set_margin_bottom(8)
-            lbl.set_margin_end(12)
+    def _render_cat(self, idx):
+        if idx < 0 or idx >= len(CATEGORIES):
+            return
+        for child in self._list_box.get_children():
+            self._list_box.remove(child)
+        _label, _icon, rows = CATEGORIES[idx]
+        for (label, icon_name, exec_cmd) in rows:
+            row = Gtk.ListBoxRow()
+            h = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
+            h.set_margin_start(20)
+            h.set_margin_end(20)
+            h.set_margin_top(2)
+            h.set_margin_bottom(2)
+            h.set_valign(Gtk.Align.CENTER)
+            try:
+                img = Gtk.Image.new_from_icon_name(icon_name, Gtk.IconSize.LARGE_TOOLBAR)
+            except Exception:
+                img = Gtk.Image.new_from_icon_name("applications-system", Gtk.IconSize.LARGE_TOOLBAR)
+            h.pack_start(img, False, False, 0)
+            l = Gtk.Label(label=label)
+            l.set_xalign(0.0)
+            h.pack_start(l, True, True, 0)
+            chev = Gtk.Label(label="\u203A")
+            chev.set_xalign(1.0)
+            chev.get_style_context().add_class("chev")
+            h.pack_start(chev, False, False, 0)
+            row.add(h)
+            row.set_size_request(-1, 48)
+            row.connect("row-activated", self._on_row_activate, exec_cmd)
+            self._list_box.add(row)
+        self._list_box.show_all()
 
-            if i == self.selected_cat:
-                lbl.override_color(Gtk.StateFlags.NORMAL, Gdk.color_parse("#ffffff"))
-            else:
-                lbl.override_color(Gtk.StateFlags.NORMAL, Gdk.color_parse(TEXT_SECONDARY))
-
-            btn.add(lbl)
-            cat_idx = i
-            btn.connect("clicked", self.on_category_click, cat_idx)
-
-            if i == self.selected_cat:
-                btn.override_background_color(Gtk.StateFlags.NORMAL, Gdk.color_parse(SELECTED))
-
-            self.sidebar.pack_start(btn, False, False, 2)
-
-        self.sidebar.show_all()
-
-    def on_category_click(self, button, index):
-        self.selected_cat = index
-        self.build_sidebar()
-        self.build_right_panel(index)
-
-    def build_right_panel(self, cat_index):
-        for child in self.right_panel.get_children():
-            self.right_panel.remove(child)
-
-        cat = CATEGORIES[cat_index]
-
-        # Category title
-        title = Gtk.Label(label=cat['name'])
-        title.set_xalign(0)
-        title.override_font(Pango.FontDescription("Inter Bold 20"))
-        title.override_color(Gtk.StateFlags.NORMAL, Gdk.color_parse(TEXT_PRIMARY))
-        title.set_margin_bottom(16)
-        self.right_panel.pack_start(title, False, False, 0)
-
-        # Settings rows
-        for item in cat['items']:
-            row = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=12)
-            row.set_margin_bottom(4)
-            row.set_margin_top(4)
-            row.set_margin_start(8)
-            row.set_margin_end(8)
-
-            # Icon
-            icon = Gtk.Image.new_from_icon_name(item['icon'], Gtk.IconSize.LARGE_TOOLBAR)
-            row.pack_start(icon, False, False, 0)
-
-            # Label
-            lbl = Gtk.Label(label=item['label'])
-            lbl.set_xalign(0)
-            lbl.override_color(Gtk.StateFlags.NORMAL, Gdk.color_parse(TEXT_PRIMARY))
-            row.pack_start(lbl, True, True, 0)
-
-            # Chevron
-            chevron = Gtk.Label(label="›")
-            chevron.override_color(Gtk.StateFlags.NORMAL, Gdk.color_parse(TEXT_SECONDARY))
-            row.pack_start(chevron, False, False, 0)
-
-            # Clickable event box
-            event_box = Gtk.EventBox()
-            event_box.add(row)
-            event_box.connect("button-release-event", self.on_row_click, item)
-            event_box.set_margin_top(4)
-            event_box.set_margin_bottom(4)
-
-            self.right_panel.pack_start(event_box, False, False, 0)
-
-            # Separator
-            sep = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
-            self.right_panel.pack_start(sep, False, False, 0)
-
-        self.right_panel.show_all()
-
-    def on_row_click(self, widget, event, item):
-        cmd = item.get('cmd', '')
-        if cmd:
-            cmd_base = cmd.split()[0]
-            if shutil.which(cmd_base) or cmd_base.startswith('python3') or cmd_base.startswith('xfce4'):
-                subprocess.Popen(cmd, shell=True)
+    def _on_row_activate(self, _w, _row, cmd):
+        if not cmd:
+            return
+        first = cmd.split()[0]
+        if first.startswith("/") and not os.path.exists(first):
+            return
+        if not first.startswith("/") and not shutil.which(first):
+            return
+        try:
+            subprocess.Popen(cmd, shell=True,
+                             stdout=subprocess.DEVNULL,
+                             stderr=subprocess.DEVNULL)
+        except Exception:
+            pass
 
 
 def main():
-    win = SettingsWindow()
+    win = SettingsWin()
+    win.connect("destroy", Gtk.main_quit)
+    signal.signal(signal.SIGINT, lambda *_: Gtk.main_quit())
     Gtk.main()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
