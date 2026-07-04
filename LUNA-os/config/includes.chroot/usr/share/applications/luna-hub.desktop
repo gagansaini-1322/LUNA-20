@@ -1,8 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=Luna Hub
-GenericName=System Monitor
+GenericName=Luna Hub — System Monitor
 Comment=Real-time gaming telemetry and system control center
+# TryExec gates visibility: gnome-shell / xfce4-panel will hide this entry
+# if /usr/bin/luna-hub is absent (e.g., before Luna Hub is built).
+TryExec=/usr/bin/luna-hub
 Exec=/usr/bin/luna-hub
 Icon=luna-logo
 Categories=System;Monitor;
