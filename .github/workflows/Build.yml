@@ -27,24 +27,12 @@ jobs:
           sudo lb clean --all
           sudo lb config
           sudo lb build 2>&1 | tee build.log
-          echo "===== TAIL OF build.log =====" 
+          echo "===== TAIL OF build.log ====="
           tail -n 200 build.log || true
           echo "===== ISO LISTING ====="
           ls -la *.iso || true
-          # Always keep the log, even on failure.
 
-      - name: Upload build logs (success)
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: luna-os-build-logs
-          path: |
-            LUNA-os/build.log
-            LUNA-os/config/binary*
-          retention-days: 7
-
-
-      - name: Upload ISO artifact (success)
+      - name: Upload Luna OS ISO
         if: success()
         uses: actions/upload-artifact@v4
         with:
@@ -53,12 +41,11 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
-      - name: Upload build logs (always)
+      - name: Upload build logs
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: luna-os-build-logs
-          path: |
-            LUNA-os/build.log
+          path: LUNA-os/build.log
           retention-days: 7
           if-no-files-found: ignore
