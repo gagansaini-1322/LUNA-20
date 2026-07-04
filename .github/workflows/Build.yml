@@ -32,6 +32,8 @@ jobs:
           tail -n 200 build.log || true
           echo "===== ISO LISTING ====="
           ls -la *.iso || true
+          echo "===== POST-PROCESSING WITH ISOHYBRID ====="
+          which isohybrid && sudo isohybrid *.iso || echo "isohybrid not available, skipping"
 
       - name: Upload Luna OS ISO
         if: success()
