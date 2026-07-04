@@ -26,7 +26,7 @@ jobs:
         run: |
           set -o pipefail
           sudo lb clean --all
-          sudo lb config
+          sudo ./auto/config
           sudo lb build 2>&1 | tee build.log
           echo "===== TAIL OF build.log ====="
           tail -n 200 build.log || true

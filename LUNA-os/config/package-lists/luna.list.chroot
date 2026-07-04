@@ -5,6 +5,8 @@ live-config-systemd
 user-setup
 
 # Boot (isolinux for BIOS, grub-efi for future UEFI support)
+isolinux
+syslinux-common
 grub-efi-amd64-bin
 
 # Desktop environment
