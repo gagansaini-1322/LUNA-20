@@ -18,56 +18,42 @@ jobs:
           sudo add-apt-repository -y universe
           sudo apt-get update
           sudo apt-get install -y \
-            live-build xorriso isolinux syslinux-common syslinux-utils \
+            live-build xorriso dosfstools mtools \
+            grub-efi-amd64-bin grub2-common \
             debootstrap squashfs-tools bc
-          # Fix Debian Bug #873513: live-build bootloader symlinks broken on Noble
-          sudo mkdir -p /usr/lib/syslinux
-          sudo ln -sf /usr/lib/ISOLINUX/isolinux.bin /usr/lib/syslinux/isolinux.bin 2>/dev/null || true
-          sudo ln -sf /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/syslinux/vesamenu.c32 2>/dev/null || true
-          # Provide our own bootloaders directory with dereferenced (real) files
-          sudo mkdir -p LUNA-os/config/bootloaders/isolinux
-          sudo cp -aL /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/ || \
-            sudo cp -a /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/
-          # Extract syslinux-common package to get boot modules (ldlinux.c32, etc)
-          sudo mkdir -p /tmp/syslinux-ext
-          APT_CACHE=/var/cache/apt/archives
-          for deb in "$APT_CACHE"/syslinux-common*.deb; do
-            [ -f "$deb" ] || continue
-            sudo dpkg-deb -x "$deb" /tmp/syslinux-ext/ 2>/dev/null || true
-          done
-          # Copy all syslinux BIOS modules (ldlinux.c32, vesamenu.c32, etc) to bootloaders
-          if [ -d /tmp/syslinux-ext/usr/lib/syslinux/modules/bios ]; then
-            sudo cp -an /tmp/syslinux-ext/usr/lib/syslinux/modules/bios/* LUNA-os/config/bootloaders/isolinux/ 2>/dev/null || true
-          fi
-          if [ -d /tmp/syslinux-ext/usr/lib/ISOLINUX ]; then
-            sudo cp -an /tmp/syslinux-ext/usr/lib/ISOLINUX/* LUNA-os/config/bootloaders/isolinux/ 2>/dev/null || true
-          fi
-          # Remove live.cfg.in - we provide our own isolinux.cfg
-          # live.cfg.in causes mv binary/live/vmlinuz-* which fails in Ubuntu mode
-          sudo rm -f LUNA-os/config/bootloaders/isolinux/live.cfg.in
-          # Remove splash.svg.in to avoid rsvg-convert issues with multiple SVG files
-          sudo rm -f LUNA-os/config/bootloaders/isolinux/splash.svg.in
-          # Create a minimal 1x1 transparent PNG bootlogo (required by lb_binary_syslinux)
-          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee LUNA-os/config/bootloaders/isolinux/bootlogo >/dev/null
-          ls -la LUNA-os/config/bootloaders/isolinux/
-          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz
-          # live-build: tar xfz extracts bootlogo (cpio arch), then cpio extracts files
-          sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
-          # Create a temporary directory with a proper cpio archive as bootlogo
-          TMPDIR=$(mktemp -d)
-          CPIO_TMP=$(mktemp -d)
-          # Create dummy theme files inside CPIO_TMP (cpio source)
-          echo "fake font" > "$CPIO_TMP/dummy.fnt"
-          echo "fake config" > "$CPIO_TMP/dummy.cfg"
-          echo "fake lang" > "$CPIO_TMP/lang"
-          echo "fake langlist" > "$CPIO_TMP/langlist"
-          # Create cpio archive (this becomes the bootlogo file)
-          (cd "$CPIO_TMP" && sudo find . -print0 | sudo cpio --null -o --format=newc) > "$TMPDIR/bootlogo"
-          # Create tar.gz containing the bootlogo file
-          (cd "$TMPDIR" && sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz bootlogo) || true
-          sudo cp "$TMPDIR/bootlogo"*".tar.gz" LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz 2>/dev/null || \
-            sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -C "$TMPDIR" bootlogo
-          sudo rm -rf "$TMPDIR" "$CPIO_TMP"
+
+      - name: Build GRUB EFI boot image
+        run: |
+          set -e
+          echo "I: Building GRUB EFI binary..."
+          sudo mkdir -p /tmp/grub-build
+          sudo grub-mkimage \
+            -O x86_64-efi \
+            -o /tmp/grub-build/BOOTX64.EFI \
+            -p /boot/grub \
+            -d /usr/lib/grub/x86_64-efi \
+            linux normal search configfile ls cat echo test true reboot \
+            all_video gfxterm font gfxmenu png gettext \
+            iso9660 udf part_gpt part_msdos \
+            search_label search_fs_uuid
+          echo "I: GRUB EFI binary built: $(ls -la /tmp/grub-build/BOOTX64.EFI)"
+
+          echo "I: Creating FAT EFI boot image..."
+          # Create 4MB FAT12 image
+          dd if=/dev/zero of=/tmp/grub-build/efi-boot.img bs=512 count=8192 2>/dev/null
+          mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
+
+          # Populate FAT image with EFI boot files
+          mmd -i /tmp/grub-build/efi-boot.img ::EFI
+          mmd -i /tmp/grub-build/efi-boot.img ::EFI/BOOT
+          mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/BOOTX64.EFI ::EFI/BOOT/
+
+          # Create startup.nsh as fallback
+          echo -e 'echo -off\nfor loadoption in EFI\\BOOT\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' > /tmp/grub-build/startup.nsh
+          mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/startup.nsh ::EFI/BOOT/
+
+          echo "I: FAT EFI boot image created: $(ls -la /tmp/grub-build/efi-boot.img)"
+          mdir -i /tmp/grub-build/efi-boot.img ::EFI/BOOT/
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
@@ -80,8 +66,58 @@ jobs:
           tail -n 200 build.log || true
           echo "===== ISO LISTING ====="
           ls -la *.iso || true
-          echo "===== POST-PROCESSING WITH ISOHYBRID ====="
-          which isohybrid && sudo isohybrid *.iso || echo "isohybrid not available, skipping"
+
+      - name: Rebuild ISO with UEFI boot
+        working-directory: LUNA-os
+        run: |
+          set -e
+          ISO_IN=$(ls *.iso)
+          echo "I: Rebuilding $ISO_IN with UEFI-only boot..."
+
+          # Extract ISO contents
+          TMPDIR=$(mktemp -d)
+          sudo 7z x -o"$TMPDIR" "$ISO_IN" > /dev/null 2>&1
+
+          # Copy GRUB EFI binary and FAT boot image into extracted ISO
+          sudo cp /tmp/grub-build/BOOTX64.EFI "$TMPDIR/EFI/BOOT/BOOTX64.EFI"
+          sudo cp /tmp/grub-build/efi-boot.img "$TMPDIR/efi-boot.img"
+
+          # Create startup.nsh fallback
+          sudo mkdir -p "$TMPDIR/EFI/BOOT"
+          echo -e 'echo -off\nfor loadoption in EFI\\BOOT\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+
+          # Create vmlinuz/initrd.img symlinks in casper/
+          cd "$TMPDIR/casper"
+          for f in vmlinuz-*; do
+            [ -f "$f" ] || continue
+            sudo ln -sf "$f" vmlinuz
+            break
+          done
+          for f in initrd.img-*; do
+            [ -f "$f" ] || continue
+            sudo ln -sf "$f" initrd.img
+            break
+          done
+          cd -
+
+          # Rebuild ISO with xorriso - UEFI only via FAT EFI boot image
+          ISO_OUT="${ISO_IN}"
+          sudo xorriso -as mkisofs \
+            -r -J \
+            -V "LUNA-OS" \
+            -iso-level 3 \
+            -o "$TMPDIR/$ISO_OUT" \
+            -e efi-boot.img \
+            -no-emul-boot \
+            -isohybrid-gpt-basdat \
+            "$TMPDIR"
+
+          sudo mv "$TMPDIR/$ISO_OUT" "./$ISO_OUT"
+          sudo rm -rf "$TMPDIR"
+          echo "I: ISO rebuilt with UEFI-only boot: $(ls -la $ISO_OUT)"
+
+          # Verify
+          xorriso -indev "$ISO_OUT" -report_el_torito as_mkisofs 2>/dev/null || true
 
       - name: Upload Luna OS ISO
         if: success()

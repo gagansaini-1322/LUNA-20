@@ -4,11 +4,8 @@ live-config
 live-config-systemd
 user-setup
 
-# Boot (isolinux for BIOS, grub-efi for UEFI)
-isolinux
-syslinux-common
+# Boot (GRUB UEFI only)
 grub-common
-grub-pc-bin
 grub-efi-amd64-bin
 grub-efi-amd64-signed
 shim-signed
