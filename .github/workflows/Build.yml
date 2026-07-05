@@ -40,6 +40,9 @@ jobs:
           # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode
           sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
           echo "dummy" | sudo cpio -o -H newc | gzip | sudo tee LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz >/dev/null
+          # Also add grub theme to the bootloaders directory
+          sudo mkdir -p LUNA-os/config/bootloaders/grub/themes/astronaut
+          sudo cp -r LUNA-os/config/includes.chroot/boot/grub/themes/astronaut/* LUNA-os/config/bootloaders/grub/themes/astronaut/
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
