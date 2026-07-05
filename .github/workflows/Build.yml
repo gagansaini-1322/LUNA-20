@@ -19,14 +19,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             live-build xorriso isolinux syslinux-common syslinux-utils \
-            debootstrap squashfs-tools bc \
-            librsvg2-bin
+            debootstrap squashfs-tools bc
           # Fix Debian Bug #873513: live-build bootloader symlinks broken on Noble
           sudo mkdir -p /usr/lib/syslinux
           sudo ln -sf /usr/lib/ISOLINUX/isolinux.bin /usr/lib/syslinux/isolinux.bin 2>/dev/null || true
           sudo ln -sf /usr/lib/syslinux/modules/bios/vesamenu.c32 /usr/lib/syslinux/vesamenu.c32 2>/dev/null || true
-          # Fix missing 'rsvg' command (librsvg2-bin provides rsvg-convert)
-          sudo ln -sf /usr/bin/rsvg-convert /usr/bin/rsvg
           # Provide our own bootloaders directory with dereferenced (real) files
           sudo mkdir -p LUNA-os/config/bootloaders/isolinux
           sudo cp -aL /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/ || \

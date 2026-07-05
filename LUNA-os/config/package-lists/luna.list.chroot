@@ -186,6 +186,7 @@ htop
 neofetch
 openssh-client
 ca-certificates
+librsvg2-bin
 
 # Linux kernel
 linux-image-generic
