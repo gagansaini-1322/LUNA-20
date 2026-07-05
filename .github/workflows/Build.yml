@@ -18,7 +18,7 @@ jobs:
           sudo add-apt-repository -y universe
           sudo apt-get update
           sudo apt-get install -y \
-            live-build xorriso dosfstools mtools \
+            live-build xorriso dosfstools mtools p7zip-full \
             grub-efi-amd64-bin grub2-common \
             debootstrap squashfs-tools bc
 
@@ -40,20 +40,20 @@ jobs:
 
           echo "I: Creating FAT EFI boot image..."
           # Create 4MB FAT12 image
-          dd if=/dev/zero of=/tmp/grub-build/efi-boot.img bs=512 count=8192 2>/dev/null
-          mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
+          sudo dd if=/dev/zero of=/tmp/grub-build/efi-boot.img bs=512 count=8192 2>/dev/null
+          sudo mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
 
           # Populate FAT image with EFI boot files
-          mmd -i /tmp/grub-build/efi-boot.img ::EFI
-          mmd -i /tmp/grub-build/efi-boot.img ::EFI/BOOT
-          mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/BOOTX64.EFI ::EFI/BOOT/
+          sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI
+          sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI/BOOT
+          sudo mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/BOOTX64.EFI ::EFI/BOOT/
 
           # Create startup.nsh as fallback
-          echo -e 'echo -off\nfor loadoption in EFI\\BOOT\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' > /tmp/grub-build/startup.nsh
-          mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/startup.nsh ::EFI/BOOT/
+          printf 'echo -off\nfor loadoption in EFI\\\\BOOT\\\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' > /tmp/grub-build/startup.nsh
+          sudo mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/startup.nsh ::EFI/BOOT/
 
-          echo "I: FAT EFI boot image created: $(ls -la /tmp/grub-build/efi-boot.img)"
-          mdir -i /tmp/grub-build/efi-boot.img ::EFI/BOOT/
+          echo "I: FAT EFI boot image created:"
+          sudo mdir -i /tmp/grub-build/efi-boot.img ::EFI/BOOT/
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
@@ -84,7 +84,7 @@ jobs:
 
           # Create startup.nsh fallback
           sudo mkdir -p "$TMPDIR/EFI/BOOT"
-          echo -e 'echo -off\nfor loadoption in EFI\\BOOT\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          printf 'echo -off\nfor loadoption in EFI\\\\BOOT\\\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
 
           # Create vmlinuz/initrd.img symlinks in casper/
           cd "$TMPDIR/casper"
