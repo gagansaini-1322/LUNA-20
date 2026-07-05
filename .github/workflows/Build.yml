@@ -43,8 +43,8 @@ jobs:
           TMPDIR=$(mktemp -d)
           echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d > "$TMPDIR/bootlogo"
           # Create tar.gz with the bootlogo inside
-          tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -C "$TMPDIR" bootlogo
-          rm -rf "$TMPDIR"
+          sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -C "$TMPDIR" bootlogo
+          sudo rm -rf "$TMPDIR"
           # Also add grub theme to the bootloaders directory
           sudo mkdir -p LUNA-os/config/bootloaders/grub/themes/astronaut
           sudo cp -r LUNA-os/config/includes.chroot/boot/grub/themes/astronaut/* LUNA-os/config/bootloaders/grub/themes/astronaut/
