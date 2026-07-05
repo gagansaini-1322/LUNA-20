@@ -41,9 +41,9 @@ jobs:
           sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
           # Create a temporary directory with a valid bootlogo PNG
           TMPDIR=$(mktemp -d)
-          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d > "$TMPDIR/bootlogo"
-          # Create a proper cpio archive (newc format) and gzip it - find is needed to include file in cpio
-          cd "$TMPDIR" && find . -print0 | sudo cpio --null -o --format=newc | sudo gzip -9 > LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz
+          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee "$TMPDIR/bootlogo" >/dev/null
+          # Create a proper cpio archive (newc format) and gzip it
+          (cd "$TMPDIR" && sudo find . -print0 | sudo cpio --null -o --format=newc) | sudo gzip -9 > LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz
           sudo rm -rf "$TMPDIR"
           # Also add grub theme to the bootloaders directory
           sudo mkdir -p LUNA-os/config/bootloaders/grub/themes/astronaut
