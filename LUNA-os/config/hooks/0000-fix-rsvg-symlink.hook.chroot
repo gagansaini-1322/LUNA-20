@@ -1,5 +1,0 @@
-#!/bin/sh
-set -e
-# Fix missing 'rsvg' command for syslinux theme processing
-# librsvg2-bin provides rsvg-convert, but syslinux expects 'rsvg'
-ln -sf /usr/bin/rsvg-convert /usr/bin/rsvg
