@@ -44,15 +44,13 @@ jobs:
           sudo mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
 
           # Create startup.nsh as fallback
-          sudo tee /tmp/grub-build/startup.nsh > /dev/null << 'NSH'
-          echo -off
-          for loadoption in EFI\BOOT\*.efi; do
-            if exist "$loadoption" then
-              load "$loadoption"
-              exit
-            endif
-          endfor
-          NSH
+          echo 'echo -off' | sudo tee /tmp/grub-build/startup.nsh > /dev/null
+          echo 'for loadoption in EFI\BOOT\*.efi; do' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
+          echo '  if exist "%loadoption%" then' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
+          echo '    load "%loadoption%"' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
+          echo '    exit' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
+          echo '  endif' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
+          echo 'endfor' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
 
           # Populate FAT image with EFI boot files
           sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI
@@ -92,15 +90,13 @@ jobs:
 
           # Create startup.nsh fallback
           sudo mkdir -p "$TMPDIR/EFI/BOOT"
-          sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null << 'NSH'
-          echo -off
-          for loadoption in EFI\BOOT\*.efi; do
-            if exist "$loadoption" then
-              load "$loadoption"
-              exit
-            endif
-          endfor
-          NSH
+          echo 'echo -off' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo 'for loadoption in EFI\BOOT\*.efi; do' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo '  if exist "%loadoption%" then' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo '    load "%loadoption%"' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo '    exit' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo '  endif' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          echo 'endfor' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
 
           # Create vmlinuz/initrd.img symlinks in casper/
           cd "$TMPDIR/casper"
