@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+# Force rebuild initramfs to include casper's live-boot hooks.
+# Must run after all packages are installed so casper is present.
+update-initramfs -u
