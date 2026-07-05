@@ -36,10 +36,10 @@ jobs:
           # Create a minimal 1x1 transparent PNG bootlogo (required by lb_binary_syslinux)
           echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee LUNA-os/config/bootloaders/isolinux/bootlogo >/dev/null
           ls -la LUNA-os/config/bootloaders/isolinux/
-          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (package doesn't exist on Noble)
+          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz with minimal cpio archive
           # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode
           sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
-          sudo tar czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -T /dev/null
+          echo "dummy" | sudo cpio -o -H newc | gzip | sudo tee LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz >/dev/null
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
