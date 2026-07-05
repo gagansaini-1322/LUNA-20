@@ -68,9 +68,6 @@ jobs:
           sudo cp "$TMPDIR/bootlogo"*".tar.gz" LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz 2>/dev/null || \
             sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -C "$TMPDIR" bootlogo
           sudo rm -rf "$TMPDIR" "$CPIO_TMP"
-          # Also add grub theme to the bootloaders directory
-          sudo mkdir -p LUNA-os/config/bootloaders/grub/themes/astronaut
-          sudo cp -r LUNA-os/config/includes.chroot/boot/grub/themes/astronaut/* LUNA-os/config/bootloaders/grub/themes/astronaut/
 
       - name: Build Luna OS ISO
         working-directory: LUNA-os
