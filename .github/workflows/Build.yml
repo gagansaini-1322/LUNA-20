@@ -78,27 +78,20 @@ jobs:
         run: |
           set -e
           ISO_IN=$(ls *.iso)
+          ISO_OUT="${ISO_IN}"
           echo "I: Rebuilding $ISO_IN with UEFI-only boot..."
 
-          # Extract ISO contents
+          # Extract ISO contents to a fresh working dir
           TMPDIR=$(mktemp -d)
           sudo 7z x -o"$TMPDIR" "$ISO_IN" > /dev/null 2>&1
 
-          # Copy GRUB EFI binary and FAT boot image into extracted ISO
-          sudo cp /tmp/grub-build/BOOTX64.EFI "$TMPDIR/EFI/BOOT/BOOTX64.EFI"
+          # Put FAT boot image at the root of the extracted tree
           sudo cp /tmp/grub-build/efi-boot.img "$TMPDIR/efi-boot.img"
 
-          # Create startup.nsh fallback
-          sudo mkdir -p "$TMPDIR/EFI/BOOT"
-          echo 'echo -off' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo 'for loadoption in EFI\BOOT\*.efi; do' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo '  if exist "%loadoption%" then' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo '    load "%loadoption%"' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo '    exit' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo '  endif' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
-          echo 'endfor' | sudo tee -a "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          # Ensure GRUB EFI binary + startup.nsh are inside the FAT image
+          # (already done in "Build GRUB EFI boot image" step)
 
-          # Create vmlinuz/initrd.img symlinks in casper/
+          # Ensure vmlinuz/initrd.img symlinks exist in casper/
           cd "$TMPDIR/casper"
           for f in vmlinuz-*; do
             [ -f "$f" ] || continue
@@ -112,24 +105,26 @@ jobs:
           done
           cd -
 
-          # Rebuild ISO with xorriso - UEFI only via FAT EFI boot image
-          ISO_OUT="${ISO_IN}"
+          # Rebuild ISO using xorriso in-place style:
+          #  - read the live-build tree from TMPDIR
+          #  - add efi-boot.img as the ONLY El Torito boot image (EFI, no emulation)
+          #  - output to a NEW file so we can swap it in
           sudo xorriso -as mkisofs \
             -r -J \
             -V "LUNA-OS" \
             -iso-level 3 \
-            -o "$TMPDIR/$ISO_OUT" \
+            -o "./$ISO_OUT" \
+            -c '/boot.catalog' \
             -e efi-boot.img \
             -no-emul-boot \
             -isohybrid-gpt-basdat \
             "$TMPDIR"
 
-          sudo mv "$TMPDIR/$ISO_OUT" "./$ISO_OUT"
           sudo rm -rf "$TMPDIR"
-          echo "I: ISO rebuilt with UEFI-only boot: $(ls -la $ISO_OUT)"
+          echo "I: ISO rebuilt with UEFI-only boot: $(ls -la ./$ISO_OUT)"
 
-          # Verify
-          xorriso -indev "$ISO_OUT" -report_el_torito as_mkisofs 2>/dev/null || true
+          # Verify El Torito structure
+          xorriso -indev "./$ISO_OUT" -report_el_torito as_mkisofs 2>/dev/null || true
 
       - name: Upload Luna OS ISO
         if: success()

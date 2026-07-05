@@ -3,6 +3,7 @@ live-boot
 live-config
 live-config-systemd
 user-setup
+casper
 
 # Boot (GRUB UEFI only)
 grub-common
