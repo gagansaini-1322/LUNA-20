@@ -31,6 +31,8 @@ jobs:
           # Remove live.cfg.in - we provide our own isolinux.cfg
           # live.cfg.in causes mv binary/live/vmlinuz-* which fails in Ubuntu mode
           sudo rm -f LUNA-os/config/bootloaders/isolinux/live.cfg.in
+          # Remove splash.svg.in to avoid rsvg-convert issues with multiple SVG files
+          sudo rm -f LUNA-os/config/bootloaders/isolinux/splash.svg.in
           ls -la LUNA-os/config/bootloaders/isolinux/
           # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (package doesn't exist on Noble)
           # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode
