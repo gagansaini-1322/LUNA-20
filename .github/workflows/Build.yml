@@ -28,6 +28,9 @@ jobs:
           sudo mkdir -p LUNA-os/config/bootloaders/isolinux
           sudo cp -aL /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/ || \
             sudo cp -a /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/
+          # Remove live.cfg.in - we provide our own isolinux.cfg
+          # live.cfg.in causes mv binary/live/vmlinuz-* which fails in Ubuntu mode
+          sudo rm -f LUNA-os/config/bootloaders/isolinux/live.cfg.in
           ls -la LUNA-os/config/bootloaders/isolinux/
           # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (package doesn't exist on Noble)
           # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode

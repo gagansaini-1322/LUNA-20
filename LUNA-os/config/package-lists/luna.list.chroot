@@ -180,9 +180,13 @@ pkg-config
 curl
 wget
 git
- unzip
+unzip
 zip
 htop
 neofetch
 openssh-client
 ca-certificates
+
+# Linux kernel
+linux-image-generic
+linux-headers-generic
