@@ -4,10 +4,16 @@ live-config
 live-config-systemd
 user-setup
 
-# Boot (isolinux for BIOS, grub-efi for future UEFI support)
+# Boot (isolinux for BIOS, grub-efi for UEFI)
 isolinux
 syslinux-common
+grub-common
+grub-pc-bin
 grub-efi-amd64-bin
+grub-efi-amd64-signed
+shim-signed
+mtools
+librsvg2-bin
 
 # Desktop environment
 xfce4
