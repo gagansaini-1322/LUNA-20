@@ -3,7 +3,7 @@ set -e
 lb config noauto \
     --architectures amd64 \
     --distribution noble \
-    --binary-images iso-hybrid \
+    --binary-images iso \
     --archive-areas "main restricted universe multiverse" \
     --mirror-bootstrap "http://archive.ubuntu.com/ubuntu" \
     --mirror-chroot "http://archive.ubuntu.com/ubuntu" \
