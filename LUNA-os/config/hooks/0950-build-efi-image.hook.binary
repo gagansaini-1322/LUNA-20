@@ -1,0 +1,45 @@
+#!/bin/sh
+set -e
+# Build EFI boot loader for Luna OS
+# This creates /EFI/BOOT/BOOTX64.EFI using grub-mkimage
+
+# Look for grub-mkimage in chroot (from grub-efi-amd64-bin package)
+MKIMAGE=/usr/bin/grub-mkimage
+[ -f chroot/$MKIMAGE ] || MKIMAGE=/usr/bin/grub-mkimage
+
+if [ ! -f /usr/bin/grub-mkimage ] && [ ! -f chroot/usr/bin/grub-mkimage ]; then
+    echo "W: grub-mkimage not found, skipping EFI boot image creation"
+    exit 0
+fi
+
+echo "I: Building EFI boot image..."
+
+# Create EFI directory structure
+mkdir -p binary/EFI/BOOT
+
+# Build EFI binary using grub-mkimage
+# Use modules needed for boot: linux, normal, search, part_gpt, iso9660, etc.
+MODULES="linux normal search configfile ls cat echo test true reboot all_video gfxterm font gfxmenu png gettext"
+
+# Use grub-mkimage from the chroot if available
+if command -v chroot/grub-mkimage >/dev/null 2>&1; then
+    CHROOT_SBIN="/usr/sbin:/usr/bin:/sbin:/bin"
+    cp -a /usr/bin/grub-mkimage binary/grub-mkimage.tmp 2>/dev/null || true
+fi
+
+# Try to find a working grub-mkimage
+if [ -f /usr/bin/grub-mkimage ]; then
+    /usr/bin/grub-mkimage \
+        -O x86_64-efi \
+        -o binary/EFI/BOOT/BOOTX64.EFI \
+        -p /boot/grub \
+        $MODULES || echo "W: Failed to build BOOTX64.EFI"
+fi
+
+# Make the ISO also bootable as EFI by adding EFI boot catalog entry
+# This is handled by xorriso if /EFI/BOOT/BOOTX64.EFI exists
+if [ -f binary/EFI/BOOT/BOOTX64.EFI ]; then
+    echo "I: EFI boot image created at binary/EFI/BOOT/BOOTX64.EFI"
+else
+    echo "W: No EFI boot image created"
+fi
