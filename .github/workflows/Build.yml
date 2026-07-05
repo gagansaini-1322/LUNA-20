@@ -36,15 +36,24 @@ jobs:
           # Create a minimal 1x1 transparent PNG bootlogo (required by lb_binary_syslinux)
           echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee LUNA-os/config/bootloaders/isolinux/bootlogo >/dev/null
           ls -la LUNA-os/config/bootloaders/isolinux/
-          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (gzip compressed cpio)
-          # live-build's lb_binary_syslinux uses cpio -i to extract this
+          # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz
+          # live-build: tar xfz extracts bootlogo (cpio arch), then cpio extracts files
           sudo mkdir -p LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu
-          # Create a temporary directory with a valid bootlogo PNG
+          # Create a temporary directory with a proper cpio archive as bootlogo
           TMPDIR=$(mktemp -d)
-          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee "$TMPDIR/bootlogo" >/dev/null
-          # Create a proper gzip-compressed cpio archive (live-build uses cpio -i)
-          (cd "$TMPDIR" && sudo find . -print0 | sudo cpio --null -o --format=newc | gzip -9) | sudo tee LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz >/dev/null
-          sudo rm -rf "$TMPDIR"
+          CPIO_TMP=$(mktemp -d)
+          # Create dummy theme files inside CPIO_TMP (cpio source)
+          echo "fake font" > "$CPIO_TMP/dummy.fnt"
+          echo "fake config" > "$CPIO_TMP/dummy.cfg"
+          echo "fake lang" > "$CPIO_TMP/lang"
+          echo "fake langlist" > "$CPIO_TMP/langlist"
+          # Create cpio archive (this becomes the bootlogo file)
+          (cd "$CPIO_TMP" && sudo find . -print0 | sudo cpio --null -o --format=newc) > "$TMPDIR/bootlogo"
+          # Create tar.gz containing the bootlogo file
+          (cd "$TMPDIR" && sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz bootlogo) || true
+          sudo cp "$TMPDIR/bootlogo"*".tar.gz" LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz 2>/dev/null || \
+            sudo tar -czf LUNA-os/config/includes.chroot/usr/share/gfxboot-theme-ubuntu/bootlogo.tar.gz -C "$TMPDIR" bootlogo
+          sudo rm -rf "$TMPDIR" "$CPIO_TMP"
           # Also add grub theme to the bootloaders directory
           sudo mkdir -p LUNA-os/config/bootloaders/grub/themes/astronaut
           sudo cp -r LUNA-os/config/includes.chroot/boot/grub/themes/astronaut/* LUNA-os/config/bootloaders/grub/themes/astronaut/
