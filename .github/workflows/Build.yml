@@ -43,13 +43,21 @@ jobs:
           sudo dd if=/dev/zero of=/tmp/grub-build/efi-boot.img bs=512 count=8192 2>/dev/null
           sudo mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
 
+          # Create startup.nsh as fallback
+          sudo tee /tmp/grub-build/startup.nsh > /dev/null << 'NSH'
+          echo -off
+          for loadoption in EFI\BOOT\*.efi; do
+            if exist "$loadoption" then
+              load "$loadoption"
+              exit
+            endif
+          endfor
+          NSH
+
           # Populate FAT image with EFI boot files
           sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI
           sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI/BOOT
           sudo mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/BOOTX64.EFI ::EFI/BOOT/
-
-          # Create startup.nsh as fallback
-          printf 'echo -off\nfor loadoption in EFI\\\\BOOT\\\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' > /tmp/grub-build/startup.nsh
           sudo mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/startup.nsh ::EFI/BOOT/
 
           echo "I: FAT EFI boot image created:"
@@ -84,7 +92,15 @@ jobs:
 
           # Create startup.nsh fallback
           sudo mkdir -p "$TMPDIR/EFI/BOOT"
-          printf 'echo -off\nfor loadoption in EFI\\\\BOOT\\\\*.efi; do\n  if exist "$loadoption" then\n    load "$loadoption"\n    exit\n  endif\ndone\n' | sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null
+          sudo tee "$TMPDIR/EFI/BOOT/startup.nsh" > /dev/null << 'NSH'
+          echo -off
+          for loadoption in EFI\BOOT\*.efi; do
+            if exist "$loadoption" then
+              load "$loadoption"
+              exit
+            endif
+          endfor
+          NSH
 
           # Create vmlinuz/initrd.img symlinks in casper/
           cd "$TMPDIR/casper"
