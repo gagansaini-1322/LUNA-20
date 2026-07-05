@@ -28,6 +28,14 @@ jobs:
           sudo mkdir -p LUNA-os/config/bootloaders/isolinux
           sudo cp -aL /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/ || \
             sudo cp -a /usr/share/live/build/bootloaders/isolinux/* LUNA-os/config/bootloaders/isolinux/
+          # Copy all syslinux COM32 modules (ldlinux.c32, vesamenu.c32, etc.) needed for boot
+          sudo mkdir -p /tmp/syslinux-extract
+          cd /tmp/syslinux-extract
+          apt-get download syslinux-common >/dev/null 2>&1
+          dpkg-deb -x syslinux-common*.deb syslinux-pkg/ >/dev/null 2>&1
+          sudo cp -a syslinux-pkg/usr/lib/syslinux/modules/bios/* LUNA-os/config/bootloaders/isolinux/ 2>/dev/null || true
+          sudo cp -a syslinux-pkg/usr/lib/ISOLINUX/* LUNA-os/config/bootloaders/isolinux/ 2>/dev/null || true
+          cd /workspaces/LUNA-20 2>/dev/null || cd /home/runner/work/LUNA-20/LUNA-20
           # Remove live.cfg.in - we provide our own isolinux.cfg
           # live.cfg.in causes mv binary/live/vmlinuz-* which fails in Ubuntu mode
           sudo rm -f LUNA-os/config/bootloaders/isolinux/live.cfg.in
