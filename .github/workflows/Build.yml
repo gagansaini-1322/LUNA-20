@@ -33,6 +33,8 @@ jobs:
           sudo rm -f LUNA-os/config/bootloaders/isolinux/live.cfg.in
           # Remove splash.svg.in to avoid rsvg-convert issues with multiple SVG files
           sudo rm -f LUNA-os/config/bootloaders/isolinux/splash.svg.in
+          # Create a minimal 1x1 transparent PNG bootlogo (required by lb_binary_syslinux)
+          echo 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==' | base64 -d | sudo tee LUNA-os/config/bootloaders/isolinux/bootlogo >/dev/null
           ls -la LUNA-os/config/bootloaders/isolinux/
           # Create dummy gfxboot-theme-ubuntu bootlogo.tar.gz (package doesn't exist on Noble)
           # live-build's lb_binary_syslinux tries to extract this in Ubuntu mode
