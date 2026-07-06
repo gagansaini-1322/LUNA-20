@@ -11,7 +11,7 @@ lb config noauto \
     --mirror-binary-security "http://security.ubuntu.com/ubuntu" \
     --security true \
     --bootloader "grub-efi" \
-    --bootappend-live "boot=live components console=ttyS0,115200n8 quiet splash username=luna hostname=luna live-config.user-fullname=Luna live-config.username=luna live-config.userpassword=luna" \
+    --bootappend-live "boot=casper components console=ttyS0,115200n8 quiet splash username=luna hostname=luna live-config.user-fullname=Luna live-config.username=luna live-config.userpassword=luna" \
     --iso-application "Luna OS" \
     --iso-publisher "Luna OS Project" \
     --iso-volume "LUNA-OS" \

@@ -90,9 +90,9 @@ jobs:
           sudo cp /usr/lib/grub/x86_64-efi/*.mod "$TMPDIR/boot/grub/x86_64-efi/"
           sudo cp /usr/lib/grub/x86_64-efi/*.lst "$TMPDIR/boot/grub/x86_64-efi/" 2>/dev/null || true
 
-          # Create symlinks in /live/ directory
-          if [ -d "$TMPDIR/live" ]; then
-            cd "$TMPDIR/live"
+          # Create symlinks in /casper/ directory
+          if [ -d "$TMPDIR/casper" ]; then
+            cd "$TMPDIR/casper"
             for f in vmlinuz-*; do
               [ -f "$f" ] || continue
               sudo ln -sf "$f" vmlinuz
