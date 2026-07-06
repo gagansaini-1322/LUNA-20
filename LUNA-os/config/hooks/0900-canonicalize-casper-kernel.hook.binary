@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
-# Create /casper/vmlinuz and /casper/initrd.img symlinks to the versioned kernel
+# Create /live/vmlinuz and /live/initrd symlinks to the versioned kernel
 # This allows generic kernel paths in bootloader configs
-if [ -d binary/casper ]; then
-    cd binary/casper
+if [ -d binary/live ]; then
+    cd binary/live
     for f in vmlinuz-*; do
         [ -f "$f" ] || continue
         ln -sf "$f" vmlinuz
@@ -11,7 +11,7 @@ if [ -d binary/casper ]; then
     done
     for f in initrd.img-*; do
         [ -f "$f" ] || continue
-        ln -sf "$f" initrd.img
+        ln -sf "$f" initrd
         break
     done
     cd /

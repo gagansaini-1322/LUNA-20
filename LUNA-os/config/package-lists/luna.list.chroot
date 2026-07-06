@@ -1,5 +1,8 @@
 # Base live system
-casper
+live-boot
+live-boot-initramfs-tools
+live-config
+live-config-systemd
 user-setup
 
 # Boot (GRUB UEFI only)

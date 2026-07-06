@@ -3,16 +3,15 @@ set -e
 lb config noauto \
     --architectures amd64 \
     --distribution noble \
-    --binary-images iso \
+    --binary-images iso-hybrid \
     --archive-areas "main restricted universe multiverse" \
     --mirror-bootstrap "http://archive.ubuntu.com/ubuntu" \
     --mirror-chroot "http://archive.ubuntu.com/ubuntu" \
     --mirror-binary "http://archive.ubuntu.com/ubuntu" \
     --mirror-binary-security "http://security.ubuntu.com/ubuntu" \
-    --security false \
-    --bootloader grub-efi \
-    --initramfs casper \
-    --bootappend-live "boot=casper components nopersistence ignore_uuid username=ubuntu hostname=ubuntu user-fullname=Luna quiet splash" \
+    --security true \
+    --bootloader "grub-efi" \
+    --bootappend-live "boot=live components quiet splash username=luna hostname=luna live-config.user-fullname=Luna live-config.username=luna live-config.userpassword=luna" \
     --iso-application "Luna OS" \
     --iso-publisher "Luna OS Project" \
     --iso-volume "LUNA-OS" \

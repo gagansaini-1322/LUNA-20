@@ -39,11 +39,9 @@ jobs:
           echo "I: GRUB EFI binary built: $(ls -la /tmp/grub-build/BOOTX64.EFI)"
 
           echo "I: Creating FAT EFI boot image..."
-          # Create 4MB FAT12 image
           sudo dd if=/dev/zero of=/tmp/grub-build/efi-boot.img bs=512 count=8192 2>/dev/null
           sudo mkfs.fat -F 12 -n "EFI" /tmp/grub-build/efi-boot.img
 
-          # Create startup.nsh as fallback
           echo 'echo -off' | sudo tee /tmp/grub-build/startup.nsh > /dev/null
           echo 'for loadoption in EFI\BOOT\*.efi; do' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
           echo '  if exist "%loadoption%" then' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
@@ -52,7 +50,6 @@ jobs:
           echo '  endif' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
           echo 'endfor' | sudo tee -a /tmp/grub-build/startup.nsh > /dev/null
 
-          # Populate FAT image with EFI boot files
           sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI
           sudo mmd -i /tmp/grub-build/efi-boot.img ::EFI/BOOT
           sudo mcopy -i /tmp/grub-build/efi-boot.img /tmp/grub-build/BOOTX64.EFI ::EFI/BOOT/
@@ -81,34 +78,27 @@ jobs:
           ISO_OUT="${ISO_IN}"
           echo "I: Rebuilding $ISO_IN with UEFI-only boot..."
 
-          # Extract ISO contents to a fresh working dir
           TMPDIR=$(mktemp -d)
           sudo 7z x -o"$TMPDIR" "$ISO_IN" > /dev/null 2>&1
 
-          # Put FAT boot image at the root of the extracted tree
           sudo cp /tmp/grub-build/efi-boot.img "$TMPDIR/efi-boot.img"
 
-          # Ensure GRUB EFI binary + startup.nsh are inside the FAT image
-          # (already done in "Build GRUB EFI boot image" step)
+          # Create symlinks in /live/ directory
+          if [ -d "$TMPDIR/live" ]; then
+            cd "$TMPDIR/live"
+            for f in vmlinuz-*; do
+              [ -f "$f" ] || continue
+              sudo ln -sf "$f" vmlinuz
+              break
+            done
+            for f in initrd.img-*; do
+              [ -f "$f" ] || continue
+              sudo ln -sf "$f" initrd
+              break
+            done
+            cd -
+          fi
 
-          # Ensure vmlinuz/initrd.img symlinks exist in casper/
-          cd "$TMPDIR/casper"
-          for f in vmlinuz-*; do
-            [ -f "$f" ] || continue
-            sudo ln -sf "$f" vmlinuz
-            break
-          done
-          for f in initrd.img-*; do
-            [ -f "$f" ] || continue
-            sudo ln -sf "$f" initrd.img
-            break
-          done
-          cd -
-
-          # Rebuild ISO using xorriso in-place style:
-          #  - read the live-build tree from TMPDIR
-          #  - add efi-boot.img as the ONLY El Torito boot image (EFI, no emulation)
-          #  - output to a NEW file so we can swap it in
           sudo xorriso -as mkisofs \
             -r -J \
             -V "LUNA-OS" \
@@ -123,7 +113,6 @@ jobs:
           sudo rm -rf "$TMPDIR"
           echo "I: ISO rebuilt with UEFI-only boot: $(ls -la ./$ISO_OUT)"
 
-          # Verify El Torito structure
           xorriso -indev "./$ISO_OUT" -report_el_torito as_mkisofs 2>/dev/null || true
 
       - name: QEMU boot smoke test
@@ -133,13 +122,10 @@ jobs:
           ISO=$(ls LUNA-os/*.iso)
           echo "I: Testing boot of $ISO with QEMU..."
 
-          # Install QEMU
           sudo apt-get install -y qemu-system-x86 ovmf
 
-          # Copy fresh OVMF VARS (critical — stale VARS causes boot failure)
           sudo cp /usr/share/OVMF/OVMF_VARS_4M.fd /tmp/OVMF_VARS.fd
 
-          # Boot QEMU with serial console, wait 90s for GRUB + kernel
           timeout 120 sudo qemu-system-x86_64 \
             -machine type=q35 -m 2048 -smp 2 \
             -accel tcg -cpu max \
@@ -155,12 +141,10 @@ jobs:
           tail -100 /tmp/serial.log || echo "No serial log found"
           echo "===== END SERIAL LOG ====="
 
-          # Check for success indicators
-          if grep -qi "Begin\|End\|casper\|live-boot\|ubuntu\|plymouth\|Cas" /tmp/serial.log 2>/dev/null; then
-            echo "I: PASS — casper/live-boot activity detected in serial log"
+          if grep -qi "Begin\|live-boot\|luna\|plymouth" /tmp/serial.log 2>/dev/null; then
+            echo "I: PASS — live-boot activity detected in serial log"
           else
-            echo "W: No casper output detected — boot may have failed"
-            echo "I: Serial log saved for debugging"
+            echo "W: No live-boot output detected — boot may have failed"
           fi
 
       - name: Upload Luna OS ISO
