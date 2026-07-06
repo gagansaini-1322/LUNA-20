@@ -1,16 +1,8 @@
 [Plymouth Theme]
-Name=luna
-Description=Luna OS custom boot animation
+Name=Darwin Plymouth
+Description=A awesome, sophisticated and minimalist Plymouth
 ModuleName=script
 
 [script]
-ScriptFile=luna.script
-
-[boot-up]
-UseEndAnimation=false
-
-[shutdown]
-UseEndAnimation=false
-
-[reboot]
-UseEndAnimation=false
+ImageDir=/usr/share/plymouth/themes/darwin
+ScriptFile=/usr/share/plymouth/themes/darwin/luna.script
