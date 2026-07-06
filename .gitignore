@@ -7,6 +7,18 @@ build.log
 # live-build output
 LUNA-os/auto/config
 !LUNA-os/auto/config.lb
+LUNA-os/config/binary/
+LUNA-os/config/bootstrap/
+LUNA-os/config/chroot/
+LUNA-os/config/common/
+LUNA-os/config/source/
+
+# Local test artifacts
+initrd.img
+vmlinuz
+kernel/
+*.deb
+*.zip
 
 # Editor / OS junk
 .DS_Store

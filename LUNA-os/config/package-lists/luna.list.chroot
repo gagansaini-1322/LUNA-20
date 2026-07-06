@@ -1,5 +1,6 @@
 # Base live system
 live-boot
+live-boot-initramfs-tools
 live-config
 live-config-systemd
 user-setup

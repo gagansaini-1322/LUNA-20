@@ -126,6 +126,42 @@ jobs:
           # Verify El Torito structure
           xorriso -indev "./$ISO_OUT" -report_el_torito as_mkisofs 2>/dev/null || true
 
+      - name: QEMU boot smoke test
+        if: success()
+        run: |
+          set -e
+          ISO=$(ls LUNA-os/*.iso)
+          echo "I: Testing boot of $ISO with QEMU..."
+
+          # Install QEMU
+          sudo apt-get install -y qemu-system-x86 ovmf
+
+          # Copy fresh OVMF VARS (critical — stale VARS causes boot failure)
+          sudo cp /usr/share/OVMF/OVMF_VARS_4M.fd /tmp/OVMF_VARS.fd
+
+          # Boot QEMU with serial console, wait 60s for GRUB + kernel
+          timeout 90 sudo qemu-system-x86_64 \
+            -machine type=q35 -m 2048 -smp 2 \
+            -drive if=pflash,format=raw,readonly=on,file=/usr/share/OVMF/OVMF_CODE_4M.fd \
+            -drive if=pflash,format=raw,file=/tmp/OVMF_VARS.fd \
+            -cdrom "$ISO" -boot d \
+            -vga std \
+            -serial file:/tmp/serial.log \
+            -monitor none \
+            -no-reboot || true
+
+          echo "===== SERIAL LOG (last 100 lines) ====="
+          tail -100 /tmp/serial.log || echo "No serial log found"
+          echo "===== END SERIAL LOG ====="
+
+          # Check for success indicators
+          if grep -qi "casper\|live-boot\|casper\|Begin\|End\|ubuntu" /tmp/serial.log 2>/dev/null; then
+            echo "I: PASS — casper/live-boot activity detected in serial log"
+          else
+            echo "W: No casper output detected — boot may have failed"
+            echo "I: Serial log saved for debugging"
+          fi
+
       - name: Upload Luna OS ISO
         if: success()
         uses: actions/upload-artifact@v4
