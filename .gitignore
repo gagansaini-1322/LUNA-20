@@ -4,14 +4,15 @@ build/
 build.log
 .cache/
 
-# live-build output
-LUNA-os/auto/config
-!LUNA-os/auto/config.lb
-LUNA-os/config/binary/
-LUNA-os/config/bootstrap/
-LUNA-os/config/chroot/
-LUNA-os/config/common/
-LUNA-os/config/source/
+# live-build generated (do not track)
+LUNA-os/.build/
+LUNA-os/chroot/
+LUNA-os/config/binary
+LUNA-os/config/bootstrap
+LUNA-os/config/chroot
+LUNA-os/config/common
+LUNA-os/config/source
+LUNA-os/live-image-*.iso
 
 # Local test artifacts
 initrd.img
