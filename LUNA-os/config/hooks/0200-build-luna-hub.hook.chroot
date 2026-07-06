@@ -15,21 +15,11 @@ fi
 # --- 2. Ensure Rust toolchain ------------------------------------------
 BUILD_TELEMETRYD=1
 if ! command -v cargo >/dev/null 2>&1; then
-    echo "[luna-hook] cargo not found; attempting rustup install..."
-    if command -v rustup-init >/dev/null 2>&1; then
-        rustup-init -y --default-toolchain stable --profile minimal --target x86_64-unknown-linux-gnu 2>/dev/null || true
-    elif command -v curl >/dev/null 2>&1; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-            -y --default-toolchain stable --profile minimal --target x86_64-unknown-linux-gnu 2>/dev/null || true
-    else
-        echo "[luna-hook] No rustup-init nor curl available; skipping Rust telemetryd build."
+    echo "[luna-hook] cargo not found; installing from apt..."
+    apt-get install -y --no-install-recommends cargo rustc 2>/dev/null || {
+        echo "[luna-hook] cargo/rustc not available in apt; skipping telemetryd build."
         BUILD_TELEMETRYD=0
-    fi
-    # shellcheck disable=SC1091
-    if [ -f "$HOME/.cargo/env" ]; then
-        . "$HOME/.cargo/env" 2>/dev/null || true
-    fi
-    export PATH="$HOME/.cargo/bin:$PATH"
+    }
 fi
 
 # --- 3. Stage workspace ------------------------------------------------

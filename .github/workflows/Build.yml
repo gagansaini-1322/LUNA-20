@@ -108,7 +108,7 @@ jobs:
 
           sudo xorriso -as mkisofs \
             -r -J \
-            -V "LUNA-OS" \
+            -V "LUNA_OS" \
             -iso-level 3 \
             -o "./$ISO_OUT" \
             -c '/boot.catalog' \
