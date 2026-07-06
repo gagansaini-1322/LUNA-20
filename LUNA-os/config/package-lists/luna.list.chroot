@@ -1,10 +1,6 @@
 # Base live system
-live-boot
-live-boot-initramfs-tools
-live-config
-live-config-systemd
-user-setup
 casper
+user-setup
 
 # Boot (GRUB UEFI only)
 grub-common
