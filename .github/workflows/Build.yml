@@ -33,9 +33,10 @@ jobs:
             -p /boot/grub \
             -d /usr/lib/grub/x86_64-efi \
             linux normal search configfile ls cat echo test true reboot \
-            all_video gfxterm font gfxmenu png gettext \
-            iso9660 udf part_gpt part_msdos \
-            search_label search_fs_uuid
+            all_video gfxterm font gfxmenu png gettext gzio \
+            iso9660 udf fat part_gpt part_msdos \
+            search_label search_fs_uuid boot loopback normal \
+            minicmd loadenv cpuid exfat ext2 btrfs xfs hfs udf
           echo "I: GRUB EFI binary built: $(ls -la /tmp/grub-build/BOOTX64.EFI)"
 
           echo "I: Creating FAT EFI boot image..."
@@ -82,6 +83,12 @@ jobs:
           sudo 7z x -o"$TMPDIR" "$ISO_IN" > /dev/null 2>&1
 
           sudo cp /tmp/grub-build/efi-boot.img "$TMPDIR/efi-boot.img"
+
+          # Copy GRUB modules to ISO so GRUB can find them at /boot/grub/x86_64-efi/
+          echo "I: Copying GRUB modules to ISO..."
+          sudo mkdir -p "$TMPDIR/boot/grub/x86_64-efi"
+          sudo cp /usr/lib/grub/x86_64-efi/*.mod "$TMPDIR/boot/grub/x86_64-efi/"
+          sudo cp /usr/lib/grub/x86_64-efi/*.lst "$TMPDIR/boot/grub/x86_64-efi/" 2>/dev/null || true
 
           # Create symlinks in /live/ directory
           if [ -d "$TMPDIR/live" ]; then
