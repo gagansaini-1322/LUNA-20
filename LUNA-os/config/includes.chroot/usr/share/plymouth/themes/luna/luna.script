@@ -80,13 +80,11 @@ fun refresh_callback ()
 	anim.index += 1;
 	anim.index %= anim.imagecount;
 	anim.sprite.SetImage(RotatedImage (anim.index));
-        #anim.sprite.SetOpacity (1);
-	#motif.sprite.SetOpacity(motif.opacity);
+	#anim.sprite.SetOpacity (1);
       }
     else
       {
         anim.sprite.SetOpacity(0);
-	motif.sprite.SetOpacity(0);
       }
 
   }
@@ -167,8 +165,7 @@ fun display_password_callback (prompt, bullets)
     if (!global.dialog) 
 	dialog_setup();
     else 
-	dialog_opacity(1);
-    motif.sprite.SetOpacity(0);
+    dialog_opacity(1);
     anim.sprite.SetOpacity(0);
 	
     dialog.prompt_sprite.SetImage(Image.Text(prompt, 1.0, 1.0, 1.0));
@@ -237,9 +234,6 @@ Plymouth.SetBootProgressFunction(progress_callback);
 fun quit_callback ()
 {
  anim.sprite.SetOpacity (0);
-  if (Plymouth.GetMode() == "shutdown") {
-   motif.sprite.SetOpacity(0);
-  }
 }
 
 Plymouth.SetQuitFunction(quit_callback);
