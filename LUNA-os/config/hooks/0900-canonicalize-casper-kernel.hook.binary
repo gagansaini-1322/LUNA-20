@@ -1,9 +1,9 @@
 #!/bin/sh
 set -e
-# Create /live/vmlinuz and /live/initrd symlinks to the versioned kernel
+# Create /casper/vmlinuz and /casper/initrd symlinks to the versioned kernel
 # This allows generic kernel paths in bootloader configs
-if [ -d binary/live ]; then
-    cd binary/live
+if [ -d binary/casper ]; then
+    cd binary/casper
     for f in vmlinuz-*; do
         [ -f "$f" ] || continue
         ln -sf "$f" vmlinuz
