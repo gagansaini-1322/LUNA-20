@@ -22,6 +22,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Build LUNA OS ISO
+        id: build
         run: |
           set -e
           echo "Building LUNA OS ISO..."
@@ -38,12 +39,20 @@ jobs:
 
           pacman -S --noconfirm qemu-system-x86 edk2-ovmf
 
-          cp /usr/share/edk2/x64/OVMF_VARS.fd /tmp/OVMF_VARS.fd
+          OVMF_CODE=$(find /usr/share -name 'OVMF_CODE.fd' 2>/dev/null | head -1)
+          OVMF_VARS=$(find /usr/share -name 'OVMF_VARS.fd' 2>/dev/null | head -1)
+
+          if [ -z "$OVMF_CODE" ] || [ -z "$OVMF_VARS" ]; then
+            echo "W: OVMF firmware not found, skipping UEFI smoke test"
+            exit 0
+          fi
+
+          cp "$OVMF_VARS" /tmp/OVMF_VARS.fd
 
           timeout 120 qemu-system-x86_64 \
             -machine type=q35 -m 4096 -smp 4 \
             -accel tcg -cpu max \
-            -drive if=pflash,format=raw,readonly=on,file=/usr/share/edk2/x64/OVMF_CODE.fd \
+            -drive if=pflash,format=raw,readonly=on,file="$OVMF_CODE" \
             -drive if=pflash,format=raw,file=/tmp/OVMF_VARS.fd \
             -cdrom "$ISO" -boot d \
             -display none -nographic \
@@ -62,7 +71,7 @@ jobs:
           fi
 
       - name: Upload LUNA OS ISO
-        if: success()
+        if: always() && steps.Build.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: luna-os-iso
