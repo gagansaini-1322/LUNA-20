@@ -11,6 +11,7 @@ mkinitcpio-archiso
 
 # --- Bootloader Support ---
 syslinux
+systemd-boot
 memtest86+
 memtest86+-efi
 edk2-shell
