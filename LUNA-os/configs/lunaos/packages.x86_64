@@ -26,7 +26,6 @@ kde-applications
 kde-games
 kde-multimedia
 kde-network
-kde-utils
 ark
 filelight
 spectacle
@@ -73,8 +72,7 @@ xf86-video-intel
 xf86-video-nouveau
 
 # --- Gaming: DirectX Translation ---
-dxvk
-lib32-dxvk
+# dxvk and lib32-dxvk are AUR packages - install via yay after boot
 vkd3d
 lib32-vkd3d
 
@@ -122,4 +120,4 @@ ttf-bitstream-vera
 plymouth
 
 # --- Installer ---
-calamares
+# calamares is AUR-only - install via yay after boot
