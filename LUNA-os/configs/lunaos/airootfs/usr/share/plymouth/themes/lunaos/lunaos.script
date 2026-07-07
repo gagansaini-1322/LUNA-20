@@ -1,0 +1,78 @@
+# LUNA OS Plymouth Boot Splash Theme
+# Dark + Blue accent theme matching LUNA OS branding
+
+# Get screen dimensions
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+
+# Set background color (deep space blue)
+Window.SetBackgroundTopColor(0.04, 0.05, 0.10);
+Window.SetBackgroundBottomColor(0.02, 0.03, 0.06);
+
+# Load logo
+logo = Image("images/logo.png");
+logo_sprite = Sprite(logo);
+
+# Center the logo
+logo_width = logo.GetWidth();
+logo_height = logo.GetHeight();
+logo_sprite.SetX((screen_width / 2) - (logo_width / 2));
+logo_sprite.SetY((screen_height / 2) - (logo_height / 2));
+logo_sprite.SetZ(1);
+logo_sprite.SetOpacity(0);
+
+# Progress bar
+progress = 0;
+progress_bar_width = 200;
+progress_bar_height = 4;
+progress_bar_x = (screen_width / 2) - (progress_bar_width / 2);
+progress_bar_y = (screen_height / 2) + (logo_height / 2) + 40;
+
+# Create progress bar background
+progress_bg_image = Image.Text(" ", 0.1, 0.1, 0.15, 1.0);
+progress_bg_sprite = Sprite(progress_bg_image);
+progress_bg_sprite.SetX(progress_bar_x);
+progress_bg_sprite.SetY(progress_bar_y);
+progress_bg_sprite.SetZ(0);
+progress_bg_sprite.SetOpacity(0);
+
+# Fade in logo
+fun on_refresh() {
+    if (logo_sprite.GetOpacity() < 1.0) {
+        logo_sprite.SetOpacity(logo_sprite.GetOpacity() + 0.05);
+    }
+    if (progress_bg_sprite.GetOpacity() < 1.0) {
+        progress_bg_sprite.SetOpacity(progress_bg_sprite.GetOpacity() + 0.05);
+    }
+}
+Plymouth.SetRefreshFunction(on_refresh);
+
+# Boot progress callback
+fun on_boot_progress(duration, boot_progress) {
+    progress = boot_progress;
+}
+Plymouth.SetBootProgressFunction(on_boot_progress);
+
+# Mode callbacks
+fun on_mode_normal() {
+    logo_sprite.SetOpacity(1.0);
+    progress_bg_sprite.SetOpacity(1.0);
+}
+Plymouth.SetDisplayNormalFunction(on_mode_normal);
+
+fun on_mode_password(prompt, bullets) {
+    # Show password prompt
+    prompt_text = Image.Text(prompt, 1.0, 1.0, 1.0);
+    prompt_sprite = Sprite(prompt_text);
+    prompt_sprite.SetX((screen_width / 2) - (prompt_text.GetWidth() / 2));
+    prompt_sprite.SetY(progress_bar_y + 30);
+    prompt_sprite.SetZ(2);
+}
+Plymouth.SetDisplayPasswordFunction(on_mode_password);
+
+# Quit callback
+fun on_quit() {
+    logo_sprite.SetOpacity(0);
+    progress_bg_sprite.SetOpacity(0);
+}
+Plymouth.SetQuitFunction(on_quit);

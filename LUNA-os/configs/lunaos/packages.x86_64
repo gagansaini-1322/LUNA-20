@@ -1,0 +1,125 @@
+# ============================================
+# LUNA OS - Gaming Edition Package List
+# ============================================
+
+# --- Base System ---
+base
+linux
+linux-firmware
+mkinitcpio
+mkinitcpio-archiso
+
+# --- Bootloader Support ---
+syslinux
+memtest86+
+memtest86+-efi
+edk2-shell
+
+# --- Desktop Environment (KDE Plasma) ---
+plasma-desktop
+sddm
+sddm-kcm
+konsole
+dolphin
+dolphin-plugins
+kde-applications
+kde-games
+kde-multimedia
+kde-network
+kde-utils
+ark
+filelight
+spectacle
+okular
+
+# --- Gaming: Steam ---
+steam
+steam-devices
+
+# --- Gaming: Wine ---
+wine
+wine-gecko
+wine-mono
+winetricks
+
+# --- Gaming: Lutris ---
+lutris
+
+# --- Gaming: Performance ---
+gamemode
+lib32-gamemode
+mangohud
+lib32-mangohud
+goverlay
+gamescope
+
+# --- Gaming: Vulkan (AMD/Intel/NVIDIA) ---
+vulkan-icd-loader
+lib32-vulkan-icd-loader
+vulkan-tools
+vulkan-radeon
+lib32-vulkan-radeon
+vulkan-intel
+lib32-vulkan-intel
+nvidia-utils
+lib32-nvidia-utils
+
+# --- Gaming: Mesa ---
+mesa
+lib32-mesa
+mesa-utils
+xf86-video-amdgpu
+xf86-video-intel
+xf86-video-nouveau
+
+# --- Gaming: DirectX Translation ---
+dxvk
+lib32-dxvk
+vkd3d
+lib32-vkd3d
+
+# --- Gaming: Controllers ---
+bluez
+bluez-utils
+sdl2-compat
+lib32-sdl2
+
+# --- Audio (PipeWire) ---
+pipewire
+pipewire-audio
+pipewire-pulse
+pipewire-alsa
+pipewire-jack
+wireplumber
+lib32-pipewire
+lib32-libpulse
+alsa-utils
+
+# --- Networking ---
+networkmanager
+network-manager-applet
+dhcpcd
+openssh
+
+# --- System Tools ---
+git
+base-devel
+p7zip
+unzip
+cabextract
+innoextract
+curl
+wget
+
+# --- Fonts ---
+ttf-dejavu
+noto-fonts
+noto-fonts-cjk
+ttf-liberation
+ttf-bitstream-vera
+
+# --- Plymouth Boot Splash ---
+plymouth
+
+# --- Installer ---
+calamares

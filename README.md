@@ -1,57 +1,98 @@
-# Luna OS
+# LUNA OS
 
 **Light. Fast. Limitless.**
 
-A custom Ubuntu Noble (24.04 LTS) based live ISO built with live-build, featuring
-a complete custom GTK3 desktop replacement.
+A lightweight Arch-based gaming distribution with KDE Plasma desktop.
 
-* Custom dark GTK3 theme for XFCE
-* Glassmorphic bottom dock (custom-built, no Plank/Cairo-Dock)
-* Full-width top bar with workspace switcher, indicators, performance mode
-* Luna Hub — Flask + WebKit2 system monitor
-* Luna Settings — centered window with macOS-style controls
-* Plymouth video-based boot animation (94 frames, two-step module)
-* 9 genre wallpapers (FPS, RPG, Racing, Strategy, Platformer, Retro/Emulation, etc.)
-* Steam + luatools-moon Lua mods pre-staged
-* Auto-login as `user` (password `luna`)
+## Features
 
-## Build
+- **Gaming Ready**: Steam, Lutris, Wine pre-installed
+- **Performance**: GameMode, MangoHud, Vulkan drivers
+- **KDE Plasma**: Modern, customizable desktop environment
+- **Arch Linux**: Rolling release, latest packages
+- **Calamares Installer**: Easy installation to USB or internal disk
+
+## Included Software
+
+### Gaming
+- Steam with Proton support
+- Lutris game manager
+- Wine for Windows games
+- MangoHud performance overlay
+- GameMode optimizations
+
+### Desktop
+- KDE Plasma desktop environment
+- SDDM display manager
+- Dolphin file manager
+- Konsole terminal
+
+### System
+- PipeWire audio
+- NetworkManager
+- Plymouth boot splash
+
+## Building from Source
+
+### Prerequisites
+
+- Arch Linux (or Arch-based distribution)
+- `archiso` package installed
+
+### Build
 
 ```bash
-sudo apt-get install -y \
-    live-build xorriso isolinux syslinux-common \
-    debootstrap squashfs-tools bc
+# Install archiso
+sudo pacman -S archiso
 
-# Build
-sudo ./build.sh         # local
-# OR
-gh workflow run Build.yml   # GitHub Actions
+# Build the ISO
+sudo ./LUNA-os/scripts/build.sh
 ```
 
-The resulting ISO lands at `LUNA-os/*.iso`.
+The ISO will be created in the `out/` directory.
 
-## Test in QEMU
+### Test in QEMU
 
 ```bash
-sudo chmod 666 /dev/kvm
-qemu-system-x86_64 -enable-kvm -cpu host -m 4G -cdrom LUNA-os/*.iso -boot d -vnc :1
+# Test the ISO
+./LUNA-os/scripts/test-qemu.sh
 ```
 
-## Layout
+## Installation
 
-```
-LUNA-os/
-├── auto/{config,build}        ← live-build entrypoints
-├── config/
-│   ├── hooks/*.hook.chroot    ← build-time chroot hooks
-│   ├── includes.binary/       ← files added to ISO boot image
-│   ├── includes.chroot/       ← filesystem overlay (becomes /)
-│   └── package-lists/luna.list.chroot
-└── ...
-```
+1. Download the ISO from GitHub Releases
+2. Create a bootable USB using `dd` or Etcher
+3. Boot from USB
+4. Follow the Calamares installer
 
-## Live user
+### Install to USB (Persistent)
 
-* Username: `user`
-* Password: `luna`
-* Hostname: `luna`
+1. Boot from USB
+2. Open Calamares installer
+3. Select "Install to USB" option
+4. Choose your USB drive as target
+5. Follow the installation steps
+
+## Customization
+
+### Wallpapers
+
+LUNA OS includes 9 custom wallpapers in `/usr/share/wallpapers/lunaos/`
+
+### Color Scheme
+
+The default color scheme is "LUNA OS Dark" with blue accents.
+
+### Plymouth Boot Splash
+
+The LUNA OS Plymouth theme shows the logo during boot.
+
+## Links
+
+- Website: https://lunaos.org
+- GitHub: https://github.com/lunaos/lunaos
+- Issues: https://github.com/lunaos/lunaos/issues
+
+## License
+
+LUNA OS is open source software licensed under GPL-3.0.

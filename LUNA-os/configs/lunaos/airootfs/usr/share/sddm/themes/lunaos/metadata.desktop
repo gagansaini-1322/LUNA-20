@@ -1,0 +1,12 @@
+[SddmGreeterTheme]
+MainScript=Main.qml
+ConfigFile=theme.conf
+Name=LUNA OS
+Author=LUNA OS Project
+Description=LUNA OS Gaming Edition Login Screen
+License=GPL-3.0
+Website=https://lunaos.org
+Screenshot=preview.png
+Email=contact@lunaos.org
+QtVersion=6
+Version=1.0

@@ -1,0 +1,22 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "contact@lunaos.org",
+                "Name": "LUNA OS Project"
+            }
+        ],
+        "Category": "Plasma Look And Feel",
+        "Description": "LUNA OS Gaming Edition - Dark theme with blue accents",
+        "EnabledByDefault": true,
+        "Id": "lunaos.desktop",
+        "License": "GPL-3.0+",
+        "Name": "LUNA OS",
+        "ServiceTypes": [
+            "Plasma/LookAndFeel"
+        ],
+        "Version": "1.0",
+        "Website": "https://lunaos.org"
+    }
+}

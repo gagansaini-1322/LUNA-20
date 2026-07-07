@@ -1,0 +1,8 @@
+[Plymouth-Theme]
+Name=LUNA OS
+Description=LUNA OS Gaming Edition Boot Splash
+ModuleName=script
+
+[script]
+ScriptFile=/usr/share/plymouth/themes/lunaos/lunaos.script
+ImageDir=/usr/share/plymouth/themes/lunaos/

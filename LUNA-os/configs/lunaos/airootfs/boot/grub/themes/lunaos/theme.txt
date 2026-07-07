@@ -1,0 +1,76 @@
+# LUNA OS GRUB Theme
+# Dark + Blue accent theme
+
+# Global
+desktop-image: "background.png"
+desktop-color: "#0a0e1a"
+title-text: ""
+terminal-font: "Unifont Regular 14"
+terminal-box: "terminal_box_*.png"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
+# Title label
++ label {
+    left = "0%"
+    top = "3%"
+    width = "100%"
+    height = "8%"
+    text = "LUNA OS"
+    font = "DejaVu Sans Bold 32"
+    color = "#00b4ff"
+    align = "center"
+}
+
+# Boot menu
++ boot_menu {
+    left = "15%"
+    top = "15%"
+    width = "70%"
+    height = "65%"
+    item_count = 6
+    item_height = "40px"
+    item_padding = "10px"
+    item_spacing = "5px"
+    item_font = "DejaVu Sans Regular 18"
+    selected_item_font = "DejaVu Sans Bold 18"
+    item_color = "#a0a8c0"
+    selected_item_color = "#ffffff"
+    item_bg = "#00000000"
+    selected_item_bg = "#00b4ff"
+    selected_item_border = "0"
+    icon_width = "32px"
+    icon_height = "32px"
+    icon_dir = "icons"
+    highlight = true
+    scrollbar = false
+}
+
+# Timeout progress bar
++ progress_bar {
+    id = "__timeout__"
+    left = "15%"
+    top = "88%"
+    width = "70%"
+    height = "4px"
+    bar_color = "#1a1a2e"
+    fg_color = "#00b4ff"
+    border_color = "#000000"
+    border_width = "0"
+    font = "DejaVu Sans Regular 10"
+    text_color = "#a0a8c0"
+    text = "Boot in %d seconds..."
+}
+
+# Footer label
++ label {
+    left = "0%"
+    top = "93%"
+    width = "100%"
+    height = "5%"
+    text = "Press 'e' to edit, 'c' for GRUB command line"
+    font = "DejaVu Sans Regular 12"
+    color = "#606880"
+    align = "center"
+}

@@ -1,0 +1,36 @@
+---
+componentName: lunaos
+welcomeExpandingLogo: true
+windowExpanding: normal
+windowSize: 920px,630px
+windowPlacement: center
+sidebar: qml,bottom
+navigation: qml,right
+
+strings:
+  productName:         LUNA OS
+  shortProductName:    LUNA OS
+  version:             2026.01
+  shortVersion:        2026.01
+  versionedName:       LUNA OS 2026.01
+  shortVersionedName:  LUNA OS 2026.01
+  bootloaderEntryName: LUNA OS
+  productUrl:          https://lunaos.org
+  supportUrl:          https://lunaos.org/support
+  knownIssuesUrl:      https://lunaos.org/known-issues
+  releaseNotesUrl:     https://lunaos.org/releases
+  donateUrl:           https://lunaos.org/donate
+
+images:
+  productLogo:         "logo.png"
+  productIcon:         "logo.png"
+  productWelcome:      "languages.png"
+
+slideshow:               "show.qml"
+slideshowAPI:            2
+
+style:
+  SidebarBackground:        "#0a0e1a"
+  SidebarText:              "#ffffff"
+  SidebarTextCurrent:       "#00b4ff"
+  SidebarBackgroundCurrent: "#141828"
