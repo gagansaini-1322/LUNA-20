@@ -31,7 +31,7 @@ plymouth-set-default-theme -R lunaos
 echo "vm.max_map_count=2147483642" > /etc/sysctl.d/80-gamecompat.conf
 
 # Create live user (for live session)
-useradd -m -G wheel,video,audio,storage,NetworkManager -s /bin/bash liveuser
+useradd -m -G wheel,video,audio,storage -s /bin/bash liveuser
 echo "liveuser:live" | chpasswd
 
 # Enable sudo for wheel group
