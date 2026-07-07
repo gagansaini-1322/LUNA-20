@@ -1,6 +1,0 @@
-#!/bin/sh
-set -e
-# EFI boot image is now built in the GitHub Actions workflow
-# This hook is kept as a no-op for reference
-echo "I: EFI boot image is built post-live-build in the workflow"
-exit 0

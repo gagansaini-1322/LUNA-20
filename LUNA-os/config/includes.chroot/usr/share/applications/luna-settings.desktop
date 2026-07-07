@@ -1,9 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=Settings
-GenericName=Luna Settings
-Exec=python3 /opt/luna-settings/settings.py
-Icon=preferences-system
-Categories=System;Settings;
-Keywords=settings;preferences;configuration;
-StartupNotify=true

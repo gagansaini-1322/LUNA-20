@@ -1,3 +1,0 @@
-#!/bin/sh
-zenity --info --title="About Luna OS" --width=400 \
-  --text="<b>Luna OS</b>\nLight. Fast. Limitless.\n\nVersion 1.0\n\nA custom Ubuntu-based live OS built for gaming and performance.\n\nhttps://github.com/gagansaini-1322/LUNA_OS"

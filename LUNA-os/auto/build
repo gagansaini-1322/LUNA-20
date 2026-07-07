@@ -1,5 +1,0 @@
-#!/bin/sh
-set -e
-# Use 'lb build noauto' so lb_build does not re-invoke auto/build,
-# which would cause argv to grow on every pass until Argument list too long.
-lb build noauto
