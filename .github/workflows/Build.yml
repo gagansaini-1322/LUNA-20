@@ -70,6 +70,32 @@ jobs:
             echo "W: No live-boot output detected - boot may have failed"
           fi
 
+      - name: QEMU BIOS boot smoke test
+        if: success()
+        run: |
+          set -e
+          ISO=$(ls /tmp/lunaos-out/*.iso | head -n1)
+          echo "Testing BIOS boot of $ISO with QEMU (SeaBIOS)..."
+          pacman -S --noconfirm qemu-system-x86
+          timeout 120 qemu-system-x86_64 \
+            -machine type=pc -m 4096 -smp 4 \
+            -accel tcg -cpu max \
+            -cdrom "$ISO" -boot d \
+            -display none -nographic \
+            -serial file:/tmp/serial-bios.log \
+            -monitor none \
+            -no-reboot || true
+          echo "===== BIOS SERIAL LOG (last 100 lines) ====="
+          tail -100 /tmp/serial-bios.log || echo "No serial log found"
+          echo "===== END BIOS SERIAL LOG ====="
+          if grep -qi "emergency\|gpt-auto-root\|dependency failed\|timed out" /tmp/serial-bios.log 2>/dev/null; then
+            echo "FAIL - emergency mode / root device errors detected in BIOS log"
+          elif grep -qi "Begin\|live-boot\|luna\|plymouth" /tmp/serial-bios.log 2>/dev/null; then
+            echo "PASS - live-boot activity detected in BIOS serial log"
+          else
+            echo "W: No live-boot output detected in BIOS log - boot may have failed"
+          fi
+
       - name: Upload LUNA OS ISO
         if: always() && steps.Build.outcome == 'success'
         uses: actions/upload-artifact@v4
